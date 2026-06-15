@@ -1,0 +1,382 @@
+/* ────────────────────────────────────────────────────────────────
+   Buidlpad Design System — V2.0 shadcn/ui core
+   Source: Figma V2.0 Shadcn Design System (CORE Library), 2026-04-19
+   (cache-bust r3 — self-hosted fonts)
+   Three-layer token system:
+     1. TailwindCSS 2026  →  raw palette + base scales
+     2. Theme 2026        →  semantic aliases (→ Tailwind)
+     3. Mode 2026         →  light / dark mapping (→ Theme)
+   All app code should consume MODE tokens (--background, --primary, …),
+   never raw palette values.
+   ──────────────────────────────────────────────────────────────── */
+
+/* ── Brand fonts — self-hosted (uploaded originals) ── */
+@font-face {
+  font-family: 'Inter';
+  src: url('./fonts/Inter_18pt-Regular.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('./fonts/Inter_18pt-Medium.ttf') format('truetype');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('./fonts/Inter_18pt-SemiBold.ttf') format('truetype');
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('./fonts/Inter_18pt-Bold.ttf') format('truetype');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Chivo Mono';
+  src: url('./fonts/ChivoMono-Regular.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Chivo Mono';
+  src: url('./fonts/ChivoMono-Medium.ttf') format('truetype');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Chivo Mono';
+  src: url('./fonts/ChivoMono-SemiBold.ttf') format('truetype');
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Chivo Mono';
+  src: url('./fonts/ChivoMono-Bold.ttf') format('truetype');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LAYER 1 — TailwindCSS 2026
+   Raw palette. 23 color families supported; Zinc (shadcn default)
+   and Neutral (alternate) enumerated fully — others referenced by
+   name via standard Tailwind values.
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  /* Zinc — shadcn/ui default neutral
+     Note the three non-standard intermediate steps (250/450/850)
+     that exist ONLY in the Buidlpad Figma source. */
+  --zinc-50:   #fafafa;
+  --zinc-100:  #f4f4f5;
+  --zinc-200:  #e4e4e7;
+  --zinc-250:  #d7d7d7;   /* Figma-only */
+  --zinc-300:  #d4d4d8;
+  --zinc-400:  #a1a1aa;
+  --zinc-450:  #767676;   /* Figma-only */
+  --zinc-500:  #71717a;
+  --zinc-600:  #52525b;
+  --zinc-700:  #3f3f46;
+  --zinc-800:  #27272a;
+  --zinc-850:  #1f1f1f;   /* Figma-only */
+  --zinc-900:  #18181b;
+  --zinc-950:  #09090b;
+
+  /* Neutral — alternate theme base */
+  --neutral-50:  #fafafa;
+  --neutral-100: #f5f5f5;
+  --neutral-200: #e5e5e5;
+  --neutral-300: #d4d4d4;
+  --neutral-400: #a3a3a3;
+  --neutral-500: #737373;
+  --neutral-600: #525252;
+  --neutral-700: #404040;
+  --neutral-800: #262626;
+  --neutral-900: #171717;
+  --neutral-950: #0a0a0a;
+
+  /* Accents referenced by semantic tokens (standard Tailwind values) */
+  --red-500:     #ef4444;
+  --red-600:     #dc2626;
+  --red-custom:  #ea3943;   /* destructive-foreground / outline, explicit in spec */
+  --green-500:   #22c55e;
+  --green-600:   #16a34a;
+  --emerald-500: #10b981;
+  --blue-500:    #3b82f6;
+  --blue-600:    #2563eb;
+
+  /* ──────────── Typography ──────────── */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Chivo Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Font sizes — 10-step scale */
+  --text-xs:   12px;  /* extra small  — helper / badge */
+  --text-sm:   14px;  /* small        — secondary body */
+  --text-base: 16px;  /* base         — primary body   */
+  --text-lg:   18px;  /* large        — large body     */
+  --text-xl:   20px;  /* extra large  — subtitle       */
+  --text-2xl:  24px;  /* 2x large     — section title  */
+  --text-3xl:  30px;  /* 3x large     — page title     */
+  --text-4xl:  36px;  /* 4x large     — big page title */
+  --text-5xl:  48px;  /* 5x large     — hero           */
+  --text-6xl:  56px;  /* 6x large     — display        */
+
+  /* Font weights — only 4 actually used in Styles API */
+  --fw-normal:    400;
+  --fw-medium:    500;
+  --fw-semibold:  600;
+  --fw-bold:      700;
+
+  /* Letter spacing */
+  --tracking-tighter: -0.8px;
+  --tracking-tight:   -0.4px;
+  --tracking-normal:   0;
+  --tracking-wide:     0.4px;
+  --tracking-wider:    0.8px;
+  --tracking-widest:   1.6px;
+
+  /* Line heights (px) */
+  --leading-3:  12px;
+  --leading-4:  16px;
+  --leading-5:  20px;
+  --leading-6:  24px;
+  --leading-7:  28px;
+  --leading-8:  32px;
+  --leading-9:  36px;
+  --leading-10: 40px;
+  --leading-11: 68px;
+  --leading-12: 72px;
+
+  /* ──────────── Spacing — 35 tokens, 4px base ──────────── */
+  --sp-0:    0;
+  --sp-px:   1px;
+  --sp-0_5:  2px;
+  --sp-1:    4px;
+  --sp-1_5:  6px;
+  --sp-2:    8px;
+  --sp-2_5:  10px;
+  --sp-3:    12px;
+  --sp-3_5:  14px;
+  --sp-4:    16px;
+  --sp-5:    20px;
+  --sp-6:    24px;
+  --sp-7:    28px;
+  --sp-8:    32px;
+  --sp-9:    36px;
+  --sp-10:   40px;
+  --sp-11:   44px;
+  --sp-12:   48px;
+  --sp-14:   56px;
+  --sp-16:   64px;
+  --sp-20:   80px;
+  --sp-24:   96px;
+  --sp-28:   112px;
+  --sp-32:   128px;
+  --sp-36:   144px;
+  --sp-40:   160px;
+  --sp-44:   176px;
+  --sp-48:   192px;
+  --sp-52:   208px;
+  --sp-56:   224px;
+  --sp-60:   240px;
+  --sp-64:   256px;
+  --sp-72:   288px;
+  --sp-80:   320px;
+  --sp-96:   384px;
+
+  /* ──────────── Border radius ──────────── */
+  --radius-none: 0;
+  --radius-sm:   2px;
+  --radius:      4px;
+  --radius-md:   6px;
+  --radius-lg:   8px;
+  --radius-llg:  10px;   /* Figma-only intermediate */
+  --radius-xl:   12px;
+  --radius-2xl:  16px;
+  --radius-3xl:  24px;
+  --radius-4xl:  32px;
+  --radius-full: 9999px;
+
+  /* ──────────── Shadows — Styles API ──────────── */
+  --shadow-sm:    0 1px 2px 0 rgba(0,0,0,0.05);
+  --shadow-base:  0 1px 3px 0 rgba(0,0,0,0.10), 0 1px 2px -1px rgba(0,0,0,0.10);
+  --shadow-md:    0 4px 6px -1px rgba(0,0,0,0.10), 0 2px 4px -2px rgba(0,0,0,0.10);
+  --shadow-lg:    0 10px 15px -3px rgba(0,0,0,0.10), 0 4px 6px -4px rgba(0,0,0,0.10);
+  --shadow-xl:    0 20px 25px -5px rgba(0,0,0,0.10), 0 8px 10px -6px rgba(0,0,0,0.10);
+  --shadow-2xl:   0 25px 50px -12px rgba(0,0,0,0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0,0,0,0.05);
+
+  /* ──────────── Blur ──────────── */
+  --blur-none: 0;
+  --blur-sm:   4px;
+  --blur-md:   12px;
+  --blur-xl:   24px;
+
+  /* ──────────── Backdrop blur ──────────── */
+  --backdrop-blur-none: 0;
+  --backdrop-blur-sm:   4px;
+  --backdrop-blur-md:   12px;
+  --backdrop-blur-xl:   24px;
+  --backdrop-blur-2xl:  40px;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LAYER 2 — Theme 2026
+   Semantic aliases. These map feature-names to Tailwind palette
+   values. Two halves per token (light / dark) exist so Mode 2026
+   can pick between them.
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  /* background / surface */
+  --theme-bg-light:            var(--zinc-50);   /* #fafafa */
+  --theme-bg-dark:             var(--zinc-950);  /* #09090b */
+  --theme-card-light:          #ffffff;
+  --theme-card-dark:           var(--zinc-900);  /* #18181b */
+  --theme-popover-light:       #ffffff;
+  --theme-popover-dark:        var(--zinc-900);
+  --theme-sidebar-light:       #ffffff;
+  --theme-sidebar-dark:        var(--zinc-950);
+
+  /* foreground (text on surface) */
+  --theme-fg-light:            var(--zinc-900);
+  --theme-fg-dark:             var(--zinc-50);
+  --theme-card-fg-light:       var(--zinc-900);
+  --theme-card-fg-dark:        var(--zinc-50);
+  --theme-popover-fg-light:    var(--zinc-900);
+  --theme-popover-fg-dark:     var(--zinc-50);
+
+  /* primary — shadcn dark-neutral CTA */
+  --theme-primary-light:       var(--zinc-900);
+  --theme-primary-dark:        var(--zinc-50);
+  --theme-primary-fg-light:    var(--zinc-50);
+  --theme-primary-fg-dark:     var(--zinc-900);
+
+  /* secondary — secondary surface / button */
+  --theme-secondary-light:     var(--zinc-100);
+  --theme-secondary-dark:      var(--zinc-800);
+  --theme-secondary-fg-light:  var(--zinc-900);
+  --theme-secondary-fg-dark:   var(--zinc-50);
+
+  /* muted — quiet surface + label */
+  --theme-muted-light:         var(--zinc-100);
+  --theme-muted-dark:          var(--zinc-800);
+  --theme-muted-fg-light:      var(--zinc-450);  /* #767676 — Figma-only step */
+  --theme-muted-fg-dark:       var(--zinc-400);
+
+  /* accent — hover / highlight */
+  --theme-accent-light:        var(--zinc-100);
+  --theme-accent-dark:         var(--zinc-800);
+  --theme-accent-fg-light:     var(--zinc-900);
+  --theme-accent-fg-dark:      var(--zinc-50);
+
+  /* border / input / ring */
+  --theme-border-light:        var(--zinc-200);
+  --theme-border-dark:         var(--zinc-800);
+  --theme-input-light:         var(--zinc-200);
+  --theme-input-dark:          var(--zinc-800);
+  --theme-ring-light:          var(--zinc-900);
+  --theme-ring-dark:           var(--zinc-300);
+
+  /* sidebar */
+  --theme-sidebar-fg-light:    var(--zinc-900);
+  --theme-sidebar-fg-dark:     var(--zinc-50);
+  --theme-sidebar-border-light: var(--zinc-200);
+  --theme-sidebar-border-dark:  var(--zinc-800);
+
+  /* destructive — explicit hex per spec */
+  --theme-destructive-light:     var(--red-custom);   /* #ea3943 */
+  --theme-destructive-dark:      var(--red-600);      /* #dc2626 */
+  --theme-destructive-fg:        var(--red-custom);   /* explicit */
+  --theme-destructive-outline:   var(--red-custom);
+
+  /* success — green per spec */
+  --theme-success-light:       var(--green-600);     /* #16a34a */
+  --theme-success-dark:        var(--green-500);     /* #22c55e */
+  --theme-success-fg:          var(--green-600);     /* explicit */
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LAYER 3 — Mode 2026
+   Light / dark mapping. Consume THESE in app code.
+   Default = light. `[data-theme="dark"]` or `.dark` flips to dark.
+   ════════════════════════════════════════════════════════════════ */
+:root,
+:root[data-theme="light"],
+.light {
+  --background:            var(--theme-bg-light);
+  --foreground:            var(--theme-fg-light);
+  --card:                  var(--theme-card-light);
+  --card-foreground:       var(--theme-card-fg-light);
+  --popover:               var(--theme-popover-light);
+  --popover-foreground:    var(--theme-popover-fg-light);
+  --primary:               var(--theme-primary-light);
+  --primary-foreground:    var(--theme-primary-fg-light);
+  --secondary:             var(--theme-secondary-light);
+  --secondary-foreground:  var(--theme-secondary-fg-light);
+  --muted:                 var(--theme-muted-light);
+  --muted-foreground:      var(--theme-muted-fg-light);
+  --accent:                var(--theme-accent-light);
+  --accent-foreground:     var(--theme-accent-fg-light);
+  --border:                var(--theme-border-light);
+  --input:                 var(--theme-input-light);
+  --ring:                  var(--theme-ring-light);
+  --sidebar:               var(--theme-sidebar-light);
+  --sidebar-foreground:    var(--theme-sidebar-fg-light);
+  --sidebar-border:        var(--theme-sidebar-border-light);
+  --destructive:           var(--theme-destructive-light);
+  --destructive-foreground: var(--theme-destructive-fg);
+  --destructive-outline:   var(--theme-destructive-outline);
+  --success:               var(--theme-success-light);
+  --success-foreground:    var(--theme-success-fg);
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"],
+.dark {
+  --background:            var(--theme-bg-dark);
+  --foreground:            var(--theme-fg-dark);
+  --card:                  var(--theme-card-dark);
+  --card-foreground:       var(--theme-card-fg-dark);
+  --popover:               var(--theme-popover-dark);
+  --popover-foreground:    var(--theme-popover-fg-dark);
+  --primary:               var(--theme-primary-dark);
+  --primary-foreground:    var(--theme-primary-fg-dark);
+  --secondary:             var(--theme-secondary-dark);
+  --secondary-foreground:  var(--theme-secondary-fg-dark);
+  --muted:                 var(--theme-muted-dark);
+  --muted-foreground:      var(--theme-muted-fg-dark);
+  --accent:                var(--theme-accent-dark);
+  --accent-foreground:     var(--theme-accent-fg-dark);
+  --border:                var(--theme-border-dark);
+  --input:                 var(--theme-input-dark);
+  --ring:                  var(--theme-ring-dark);
+  --sidebar:               var(--theme-sidebar-dark);
+  --sidebar-foreground:    var(--theme-sidebar-fg-dark);
+  --sidebar-border:        var(--theme-sidebar-border-dark);
+  --destructive:           var(--theme-destructive-dark);
+  --destructive-foreground: var(--theme-destructive-fg);
+  --destructive-outline:   var(--theme-destructive-outline);
+  --success:               var(--theme-success-dark);
+  --success-foreground:    var(--theme-success-fg);
+
+  color-scheme: dark;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BASE — apply tokens to html/body
+   ════════════════════════════════════════════════════════════════ */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-6);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { box-sizing: border-box; }
+
+code, pre, kbd, samp,
+.font-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}

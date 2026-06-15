@@ -1,0 +1,35 @@
+# Local secrets and app runtime data
+.env
+*.env
+*.log
+*.sqlite3
+.gpu-monitor-logs/
+.gstack/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+local-resource-monitor-backend/.venv/
+local-resource-monitor-backend/resource_monitor.sqlite3
+local-resource-monitor-backend/resource_monitor_backend.log
+
+# macOS
+.DS_Store
+
+# Build artifacts
+macos-menu-bar/build/
+dist/
+
+# Non-project analysis/export files in this workspace
+base_*.json
+bsc_*.json
+eth_*.json
+xhs_local_analysis/
+xhs_transcripts/
+feishu_openapi/
+
+# Local connector credentials
+feishu_openapi/.env
+feishu_openapi/.token_cache.json

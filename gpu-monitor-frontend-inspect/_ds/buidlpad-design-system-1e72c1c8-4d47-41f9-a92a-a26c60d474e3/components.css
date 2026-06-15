@@ -1,0 +1,162 @@
+/* ────────────────────────────────────────────────────────────────
+   Buidlpad shadcn/ui — minimal component sheet
+   Depends on ../colors_and_type.css (mode tokens).
+   Class names track shadcn/ui defaults so we can later translate
+   directly to Tailwind @apply rules.
+   ──────────────────────────────────────────────────────────────── */
+
+/* ─── Button ─── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--sp-2);
+  font-family: var(--font-sans); font-weight: var(--fw-medium);
+  font-size: var(--text-sm); line-height: var(--leading-5);
+  border-radius: var(--radius-md);
+  padding: var(--sp-2) var(--sp-4); height: 36px;
+  border: 1px solid transparent; cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s, box-shadow .15s;
+  outline: none; user-select: none; white-space: nowrap;
+}
+.btn:focus-visible { box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-primary     { background: var(--primary);     color: var(--primary-foreground); }
+.btn-primary:hover:not(:disabled)     { background: color-mix(in oklch, var(--primary) 90%, transparent); }
+.btn-secondary   { background: var(--secondary);   color: var(--secondary-foreground); }
+.btn-secondary:hover:not(:disabled)   { background: color-mix(in oklch, var(--secondary) 80%, transparent); }
+.btn-outline     { background: var(--background);  color: var(--foreground); border-color: var(--border); }
+.btn-outline:hover:not(:disabled)     { background: var(--accent); color: var(--accent-foreground); }
+.btn-ghost       { background: transparent;        color: var(--foreground); }
+.btn-ghost:hover:not(:disabled)       { background: var(--accent); color: var(--accent-foreground); }
+.btn-destructive { background: var(--destructive); color: #fff; }
+.btn-destructive:hover:not(:disabled) { background: color-mix(in oklch, var(--destructive) 90%, black); }
+.btn-link        { background: transparent; color: var(--primary); padding: 0; height: auto; text-decoration: underline; text-underline-offset: 4px; }
+
+.btn-sm  { height: 32px; padding: 0 var(--sp-3); font-size: var(--text-xs); }
+.btn-lg  { height: 40px; padding: 0 var(--sp-6); font-size: var(--text-base); }
+.btn-icon{ height: 36px; width: 36px; padding: 0; }
+
+/* ─── Input / Textarea ─── */
+.input {
+  display: flex; width: 100%; height: 36px;
+  padding: var(--sp-2) var(--sp-3);
+  font-family: var(--font-sans); font-size: var(--text-sm);
+  color: var(--foreground); background: var(--background);
+  border: 1px solid var(--input); border-radius: var(--radius-md);
+  outline: none; transition: border-color .15s, box-shadow .15s;
+}
+.input::placeholder { color: var(--muted-foreground); }
+.input:focus-visible { border-color: var(--ring); box-shadow: 0 0 0 2px color-mix(in oklch, var(--ring) 30%, transparent); }
+.input:disabled { opacity: .5; cursor: not-allowed; }
+.input[aria-invalid="true"] { border-color: var(--destructive); }
+
+.textarea { min-height: 80px; padding: var(--sp-2) var(--sp-3); height: auto; line-height: var(--leading-5); }
+
+.label {
+  display: inline-flex; align-items: center; gap: var(--sp-1_5);
+  font-size: var(--text-sm); font-weight: var(--fw-medium);
+  line-height: var(--leading-5); color: var(--foreground);
+}
+
+/* ─── Card ─── */
+.card {
+  background: var(--card); color: var(--card-foreground);
+  border: 1px solid var(--border); border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column;
+}
+.card-header  { padding: var(--sp-6) var(--sp-6) var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-1_5); }
+.card-title   { font-size: var(--text-lg); font-weight: var(--fw-semibold); line-height: var(--leading-7); letter-spacing: var(--tracking-tight); margin: 0; }
+.card-desc    { font-size: var(--text-sm); color: var(--muted-foreground); margin: 0; }
+.card-content { padding: 0 var(--sp-6) var(--sp-6); }
+.card-footer  { padding: var(--sp-4) var(--sp-6) var(--sp-6); display: flex; align-items: center; gap: var(--sp-2); border-top: 1px solid var(--border); margin-top: auto; }
+
+/* ─── Badge ─── */
+.badge {
+  display: inline-flex; align-items: center; gap: var(--sp-1);
+  padding: var(--sp-0_5) var(--sp-2); border-radius: var(--radius-full);
+  font-size: 11px; font-weight: var(--fw-semibold); line-height: 16px;
+  letter-spacing: var(--tracking-wide); white-space: nowrap;
+}
+.badge-default     { background: var(--primary); color: var(--primary-foreground); }
+.badge-secondary   { background: var(--secondary); color: var(--secondary-foreground); }
+.badge-outline     { background: transparent; color: var(--foreground); border: 1px solid var(--border); }
+.badge-destructive { background: color-mix(in oklch, var(--destructive) 15%, transparent); color: var(--destructive); }
+.badge-success     { background: color-mix(in oklch, var(--success) 15%, transparent); color: var(--success); }
+
+/* ─── Separator ─── */
+.separator { background: var(--border); }
+.separator-h { height: 1px; width: 100%; }
+.separator-v { width: 1px; height: 100%; }
+
+/* ─── Dialog ─── */
+.dialog-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(var(--backdrop-blur-sm));
+  z-index: 50;
+}
+.dialog-content {
+  position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 448px; max-width: calc(100vw - 32px);
+  background: var(--popover); color: var(--popover-foreground);
+  border: 1px solid var(--border); border-radius: var(--radius-xl);
+  padding: var(--sp-6); box-shadow: var(--shadow-2xl);
+  display: flex; flex-direction: column; gap: var(--sp-4);
+  z-index: 51;
+}
+.dialog-header { display: flex; flex-direction: column; gap: var(--sp-1_5); }
+.dialog-title  { font-size: var(--text-lg); font-weight: var(--fw-semibold); line-height: var(--leading-7); letter-spacing: var(--tracking-tight); margin: 0; }
+.dialog-desc   { font-size: var(--text-sm); color: var(--muted-foreground); margin: 0; }
+.dialog-footer { display: flex; justify-content: flex-end; gap: var(--sp-2); }
+
+/* ─── Tabs (pill-style) ─── */
+.tabs-list {
+  display: inline-flex; align-items: center; gap: var(--sp-1);
+  padding: var(--sp-1); background: var(--muted);
+  border-radius: var(--radius-lg);
+  color: var(--muted-foreground);
+}
+.tabs-trigger {
+  border: none; background: transparent; color: inherit;
+  padding: var(--sp-1_5) var(--sp-3); border-radius: var(--radius-md);
+  font: var(--fw-medium) var(--text-sm)/var(--leading-5) var(--font-sans);
+  cursor: pointer; transition: background .15s, color .15s;
+}
+.tabs-trigger[data-state="active"] {
+  background: var(--background); color: var(--foreground);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ─── Navigation link ─── */
+.nav-link {
+  display: inline-flex; align-items: center; height: 100%;
+  padding: 0 var(--sp-1); position: relative;
+  font: var(--fw-medium) var(--text-sm)/1 var(--font-sans);
+  color: var(--muted-foreground); text-decoration: none;
+  cursor: pointer; transition: color .15s;
+}
+.nav-link:hover { color: var(--foreground); }
+.nav-link[data-state="active"] { color: var(--foreground); }
+.nav-link[data-state="active"]::after {
+  content: ''; position: absolute; left: var(--sp-1); right: var(--sp-1); bottom: -1px;
+  height: 2px; background: var(--primary); border-radius: var(--radius-full);
+}
+
+/* ─── Progress ─── */
+.progress { width: 100%; height: 8px; background: var(--secondary); border-radius: var(--radius-full); overflow: hidden; }
+.progress > i { display: block; height: 100%; background: var(--primary); transition: width .3s; }
+
+/* ─── Tables ─── */
+.dl-grid { display: grid; grid-template-columns: auto 1fr; gap: var(--sp-2) var(--sp-4); font-size: var(--text-sm); line-height: var(--leading-5); }
+.dl-grid dt { color: var(--muted-foreground); }
+.dl-grid dd { margin: 0; color: var(--foreground); text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ─── Kbd ─── */
+.kbd {
+  display: inline-flex; align-items: center;
+  padding: 0 var(--sp-1_5); height: 20px;
+  font: var(--fw-medium) 11px/1 var(--font-mono);
+  color: var(--muted-foreground); background: var(--muted);
+  border: 1px solid var(--border); border-radius: var(--radius);
+}

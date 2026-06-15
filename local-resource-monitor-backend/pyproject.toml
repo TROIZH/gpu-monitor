@@ -1,0 +1,18 @@
+[project]
+name = "local-resource-monitor-backend"
+version = "0.1.0"
+description = "Local-first backend prototype for AI workflow resource monitoring."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+]
+
+[project.optional-dependencies]
+psutil = ["psutil>=5.9"]
+
+[project.scripts]
+resource-monitor-backend = "resource_monitor_backend.server:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

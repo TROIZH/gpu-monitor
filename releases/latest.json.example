@@ -1,0 +1,6 @@
+{
+  "version": "0.2.0",
+  "download_url": "https://github.com/<owner>/<repo>/releases/download/v0.2.0/GPU-Monitor.dmg",
+  "html_url": "https://github.com/<owner>/<repo>/releases/tag/v0.2.0",
+  "notes": "Describe the user-facing changes in this release."
+}

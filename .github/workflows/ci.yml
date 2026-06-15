@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend-tests:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install backend
+        run: |
+          python -m pip install -e "local-resource-monitor-backend[psutil]"
+      - name: Run tests
+        working-directory: local-resource-monitor-backend
+        run: |
+          python -m unittest discover -s tests
+
+  macos-build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build menu bar app
+        run: |
+          chmod +x macos-menu-bar/build-menu-app.command
+          macos-menu-bar/build-menu-app.command

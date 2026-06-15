@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/buidlpad-design-system-1e72c1c8-4d47-41f9-a92a-a26c60d474e3/colors_and_type.css">
+<style>
+  html, body { margin:0; min-height:100%; background:#07090d; overscroll-behavior:none; color-scheme:dark; }
+  body::-webkit-scrollbar { width:0; height:0; background:transparent; }
+  @keyframes scenePulse { 0%,100% { transform: scale(1); opacity:.9 } 50% { transform: scale(1.35); opacity:.35 } }
+  @keyframes popIn { from { opacity:0; transform: translateY(10px) scale(.985) } to { opacity:1; transform: none } }
+  @keyframes viewIn { from { opacity:0; transform: translateX(10px) } to { opacity:1; transform:none } }
+  @keyframes softPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,0) } 50% { box-shadow: 0 0 0 6px rgba(255,255,255,.04) } }
+  .rm-scroll { scrollbar-width: thin; scrollbar-color: rgba(3,7,18,.82) transparent; }
+  .rm-scroll::-webkit-scrollbar { width: 5px; background:transparent; }
+  .rm-scroll::-webkit-scrollbar-thumb { background: rgba(3,7,18,.78); border-radius: 99px; border: 1px solid rgba(242,244,248,.07); background-clip: padding-box; }
+  .rm-scroll::-webkit-scrollbar-thumb:hover { background: rgba(20,26,36,.92); }
+  .rm-scroll::-webkit-scrollbar-track { background: transparent; margin:12px 0; }
+  .rm-tap { cursor: pointer; transition: transform .15s ease, border-color .15s ease, background .15s ease }
+  .rm-tap:hover { transform: translateY(-2px) }
+  body.rm-embedded { overflow:hidden; background:#0c1015; }
+  body.rm-embedded .rm-root { min-height:720px; padding-bottom:0; background:transparent; }
+  body.rm-embedded .rm-browser-chrome,
+  body.rm-embedded .rm-popover-arrow { display:none !important; }
+  body.rm-embedded .rm-panel { width:460px;height:720px;margin-top:0;border-radius:0;border:none;box-shadow:none; }
+</style>
+</helmet>
+<script>
+  if (new URLSearchParams(window.location.search).has('embed')) {
+    document.body.classList.add('rm-embedded');
+  }
+</script>
+<div class="rm-root" style="min-height:100vh;width:100%;display:flex;flex-direction:column;align-items:center;font-family:'Inter',-apple-system,sans-serif;background:radial-gradient(120% 80% at 50% -10%, #1c2230 0%, #0a0d12 55%, #07090d 100%);padding-bottom:40px;overflow-x:hidden;">
+
+  <!-- ░░ mock macOS menu bar ░░ -->
+  <div class="rm-browser-chrome" style="width:100%;height:30px;display:flex;align-items:center;justify-content:flex-end;gap:18px;padding:0 18px;background:rgba(20,24,31,.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);color:rgba(242,244,248,.72);font-size:12.5px;font-weight:500;">
+    <div style="display:flex;align-items:center;gap:7px;padding:3px 8px;border-radius:7px;background:rgba(255,255,255,.06);">
+      {{ menuIcon }}
+      <span style="display:inline-block;width:7px;height:7px;border-radius:99px;background:{{ heroColorMain }};box-shadow:0 0 8px {{ heroColorMain }};animation:scenePulse 2.4s ease-in-out infinite;"></span>
+      <span style="font-family:'Chivo Mono',monospace;font-size:11px;letter-spacing:.3px;color:rgba(242,244,248,.85);">{{ menuTag }}</span>
+    </div>
+    {{ menuTrayIcons }}
+    <span style="font-family:'Chivo Mono',monospace;font-size:11.5px;color:rgba(242,244,248,.85);">{{ currentTime }}</span>
+  </div>
+
+  <!-- arrow pointing up to icon -->
+  <div class="rm-popover-arrow" style="width:100%;display:flex;justify-content:center;margin-top:6px;">
+    <div style="width:100%;max-width:460px;display:flex;justify-content:flex-start;padding-left:26px;">
+      <div style="width:16px;height:16px;background:linear-gradient(135deg,#171c24,#13171e);transform:rotate(45deg);border:1px solid rgba(255,255,255,.08);border-right:none;border-bottom:none;border-top-left-radius:4px;"></div>
+    </div>
+  </div>
+
+  <!-- ░░ POPOVER ░░ -->
+  <div class="rm-panel" style="width:460px;height:720px;margin-top:-9px;border-radius:20px;background:linear-gradient(180deg,#11151c 0%,#0c1015 100%);border:1px solid rgba(255,255,255,.09);box-shadow:0 24px 60px rgba(0,0,0,.55), 0 2px 0 rgba(255,255,255,.04) inset;overflow:hidden;display:flex;flex-direction:column;position:relative;animation:popIn .35s cubic-bezier(.2,.8,.2,1);color:#F2F4F8;">
+
+    <!-- ambient glow -->
+    <div style="position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:420px;height:340px;border-radius:50%;background:radial-gradient(circle, {{ glowColor }} 0%, transparent 68%);filter:blur(20px);pointer-events:none;opacity:.55;"></div>
+
+    <!-- ① top status bar (fixed) -->
+    <div style="position:relative;z-index:2;height:48px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid rgba(255,255,255,.06);">
+      <div style="display:flex;align-items:center;gap:9px;">
+        <span style="width:9px;height:9px;border-radius:99px;background:{{ heroColorMain }};box-shadow:0 0 10px {{ heroColorMain }};"></span>
+        <span style="font-size:13.5px;font-weight:600;">设备状态 · {{ sc.statusWord }}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;color:rgba(242,244,248,.55);font-size:11.5px;">
+        <span style="font-family:'Chivo Mono',monospace;letter-spacing:.2px;">{{ sc.deviceName }}</span>
+        <span style="width:6px;height:6px;border-radius:99px;background:#34D399;box-shadow:0 0 6px #34D399;"></span>
+      </div>
+    </div>
+
+    <!-- content (scroll) -->
+    <div class="rm-scroll" style="position:relative;z-index:1;flex:1;overflow-y:auto;overflow-x:hidden;">
+
+      <!-- ══════════ OVERVIEW ══════════ -->
+      <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:18px 18px 22px;animation:viewIn .22s ease;">
+
+          <!-- ② dashboard gauges -->
+          <div style="display:flex;flex-direction:column;align-items:stretch;padding:6px 0 14px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div style="padding:4px 4px 6px;display:flex;flex-direction:column;align-items:center;min-width:0;">
+                <div style="font-size:11px;font-weight:700;color:rgba(242,244,248,.55);letter-spacing:.6px;text-transform:uppercase;">健康值</div>
+                <div style="position:relative;width:132px;height:132px;margin-top:6px;display:flex;align-items:center;justify-content:center;">
+                  {{ heroRing }}
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                    <span style="font-family:'Chivo Mono',monospace;font-weight:600;font-size:36px;line-height:1;letter-spacing:0;color:#F2F4F8;">{{ heroScore }}</span>
+                    <span style="margin-top:3px;font-size:10.5px;font-weight:600;color:{{ heroColorMain }};">/ 100</span>
+                  </div>
+                </div>
+                <div style="font-size:10.5px;color:rgba(242,244,248,.45);font-weight:600;margin-top:4px;">越高越稳定</div>
+              </div>
+
+              <div style="padding:4px 4px 6px;display:flex;flex-direction:column;align-items:center;min-width:0;">
+                <div style="font-size:11px;font-weight:700;color:rgba(242,244,248,.55);letter-spacing:.6px;text-transform:uppercase;">综合使用率</div>
+                <div style="position:relative;width:132px;height:132px;margin-top:6px;display:flex;align-items:center;justify-content:center;">
+                  {{ usageRing }}
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                    <span style="font-family:'Chivo Mono',monospace;font-weight:600;font-size:36px;line-height:1;letter-spacing:0;color:#F2F4F8;">{{ usageScore }}</span>
+                    <span style="margin-top:3px;font-size:10.5px;font-weight:600;color:{{ usageColorMain }};">%</span>
+                  </div>
+                </div>
+                <div style="font-size:10.5px;color:rgba(242,244,248,.45);font-weight:600;margin-top:4px;">越高越繁忙</div>
+              </div>
+            </div>
+            <p style="margin:14px 8px 0;text-align:center;font-size:16.5px;font-weight:600;line-height:1.4;letter-spacing:-.2px;text-wrap:balance;max-width:340px;align-self:center;">{{ sc.hero }}</p>
+            <p style="margin:6px 8px 0;text-align:center;font-size:12.5px;line-height:1.45;color:rgba(242,244,248,.55);text-wrap:pretty;max-width:330px;">{{ sc.heroSub }}</p>
+          </div>
+
+          <!-- ③ four resource cards -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;">
+            <sc-for list="{{ cards }}" as="card" hint-placeholder-count="4">
+              <div class="rm-tap" onClick="{{ card.onClick }}" style="{{ card.style }}">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div style="display:flex;align-items:center;gap:7px;color:rgba(242,244,248,.78);">
+                    {{ card.iconEl }}
+                    <span style="font-size:12px;font-weight:600;letter-spacing:.2px;">{{ card.name }}</span>
+                  </div>
+                  <span style="width:7px;height:7px;border-radius:99px;background:{{ card.dotColor }};box-shadow:0 0 7px {{ card.dotColor }};"></span>
+                </div>
+                <div style="display:flex;align-items:baseline;gap:4px;margin-top:11px;">
+                  <span style="font-family:'Chivo Mono',monospace;font-weight:600;font-size:23px;letter-spacing:-.5px;">{{ card.value }}</span>
+                  <span style="font-size:11.5px;color:rgba(242,244,248,.5);">{{ card.unit }}</span>
+                </div>
+                <div style="font-size:10.5px;color:rgba(242,244,248,.45);margin-top:1px;">{{ card.sub }}</div>
+                <div style="margin-top:9px;height:30px;">{{ card.sparkEl }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <!-- thermal status strip -->
+          <div style="{{ thermalStripStyle }}" class="rm-tap" onClick="{{ openThermal }}">
+            <div style="display:flex;align-items:center;gap:9px;">
+              {{ thermalIcon }}
+              <span style="font-size:12.5px;font-weight:600;">散热</span>
+              <span style="font-size:12px;color:{{ thermalColor }};font-weight:600;">{{ thermalWord }}</span>
+            </div>
+            <span style="font-size:11px;color:rgba(242,244,248,.5);text-align:right;max-width:215px;">{{ thermalStripNote }}</span>
+          </div>
+
+          <!-- ④ top processes -->
+          <div style="margin-top:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <span style="font-size:13.5px;font-weight:600;letter-spacing:-.1px;">最占资源的进程</span>
+              <div style="display:flex;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:2px;">
+                <div class="rm-tap" onClick="{{ setSortCpu }}" style="{{ sortCpuStyle }}">CPU</div>
+                <div class="rm-tap" onClick="{{ setSortMem }}" style="{{ sortMemStyle }}">内存</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <sc-for list="{{ processes }}" as="p" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:11px;">
+                  <div style="flex:none;width:30px;height:30px;border-radius:8px;background:{{ p.iconBg }};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:{{ p.iconFg }};font-family:'Chivo Mono',monospace;">{{ p.initial }}</div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                      <span style="font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ p.name }}</span>
+                      <span style="font-family:'Chivo Mono',monospace;font-size:12px;font-weight:600;color:{{ p.valColor }};flex:none;">{{ p.valText }}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+                      <span style="font-size:10px;color:rgba(242,244,248,.5);background:rgba(255,255,255,.06);padding:1px 6px;border-radius:6px;white-space:nowrap;">{{ p.group }}</span>
+                      <div style="flex:1;height:4px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;">
+                        <div style="height:100%;width:{{ p.barPct }};background:{{ p.barColor }};border-radius:99px;"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <!-- ⑤ bottleneck explanation card -->
+          <div style="{{ bottleneckCardStyle }}">
+            <div style="display:flex;align-items:flex-start;gap:11px;">
+              <span style="flex:none;width:3px;align-self:stretch;border-radius:99px;background:{{ bottleneck.color }};"></span>
+              <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:7px;">
+                  {{ bottleneckIcon }}
+                  <span style="font-size:13.5px;font-weight:700;letter-spacing:-.1px;">{{ bottleneck.title }}</span>
+                </div>
+                <p style="margin:6px 0 0;font-size:12px;line-height:1.5;color:rgba(242,244,248,.62);text-wrap:pretty;">{{ bottleneck.lead }}</p>
+
+                <!-- evidence (collapsible) -->
+                <div class="rm-tap" onClick="{{ toggleEvidence }}" style="display:flex;align-items:center;gap:5px;margin-top:11px;cursor:pointer;color:{{ bottleneck.color }};font-size:11.5px;font-weight:600;">
+                  <span>{{ evidenceLabel }}</span>
+                  <span style="font-size:10px;">{{ evidenceChevron }}</span>
+                </div>
+                <sc-if value="{{ evidenceOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:10px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.05);">
+                    <sc-for list="{{ bottleneck.evidence }}" as="ev" hint-placeholder-count="3">
+                      <div style="display:flex;gap:7px;font-size:11.5px;line-height:1.45;color:rgba(242,244,248,.72);">
+                        <span style="color:{{ bottleneck.color }};flex:none;">·</span>
+                        <span style="font-family:'Chivo Mono',monospace;font-size:11px;">{{ ev }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+
+                <!-- recommendations -->
+                <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+                  <sc-for list="{{ bottleneck.recommendations }}" as="rec" hint-placeholder-count="3">
+                    <div style="display:flex;gap:8px;align-items:flex-start;">
+                      <span style="flex:none;margin-top:1px;width:16px;height:16px;border-radius:99px;background:{{ recCheckBg }};display:flex;align-items:center;justify-content:center;color:{{ bottleneck.color }};font-size:10px;">✓</span>
+                      <span style="font-size:12px;line-height:1.45;color:rgba(242,244,248,.85);text-wrap:pretty;">{{ rec }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+
+                <sc-if value="{{ bottleneck.showHardware }}" hint-placeholder-val="{{ false }}">
+                  <div class="rm-tap" onClick="{{ openUpgrade }}" style="margin-top:13px;display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:10px;background:linear-gradient(90deg,rgba(91,141,239,.14),rgba(139,92,246,.14));border:1px solid rgba(124,143,240,.3);cursor:pointer;">
+                    <span style="font-size:12px;font-weight:600;color:#B9C7F7;">我是否该升级设备？</span>
+                    <span style="color:#B9C7F7;font-size:13px;">→</span>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </sc-if>
+
+      <!-- ══════════ DETAILS ══════════ -->
+      <sc-if value="{{ isDetails }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 18px 22px;animation:viewIn .22s ease;">
+          <!-- segmented tabs -->
+          <div style="display:flex;gap:4px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:3px;margin-bottom:16px;">
+            <sc-for list="{{ detailTabs }}" as="t" hint-placeholder-count="5">
+              <div class="rm-tap" onClick="{{ t.onClick }}" style="{{ t.style }}">{{ t.label }}</div>
+            </sc-for>
+          </div>
+          {{ detailBody }}
+        </div>
+      </sc-if>
+
+      <!-- ══════════ INSIGHTS ══════════ -->
+      <sc-if value="{{ isInsights }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 18px 22px;animation:viewIn .22s ease;">
+          <div style="font-size:13.5px;font-weight:700;letter-spacing:0;margin-bottom:4px;">本次使用画像</div>
+          <div style="font-size:11.5px;color:rgba(242,244,248,.5);margin-bottom:14px;font-family:'Chivo Mono',monospace;">{{ ins.period }}</div>
+
+          <!-- user type card -->
+          <div style="padding:16px;border-radius:16px;background:linear-gradient(135deg,rgba(91,141,239,.12),rgba(139,92,246,.10));border:1px solid rgba(124,143,240,.22);">
+            <div style="font-size:11px;color:rgba(242,244,248,.55);font-weight:600;letter-spacing:.3px;">你的使用习惯</div>
+            <div style="font-size:21px;font-weight:700;letter-spacing:0;margin-top:5px;">{{ ins.primaryType }}</div>
+            <div style="font-size:11.5px;color:rgba(242,244,248,.6);margin-top:3px;">常见场景：{{ ins.secondaryType }}</div>
+            <p style="margin:11px 0 0;font-size:12.5px;line-height:1.5;color:rgba(242,244,248,.8);text-wrap:pretty;">{{ ins.summary }}</p>
+          </div>
+
+          <!-- device fit -->
+          <div style="margin-top:12px;padding:16px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:16px;">
+            <div style="position:relative;width:84px;height:84px;flex:none;display:flex;align-items:center;justify-content:center;">
+              {{ fitRing }}
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <span style="font-family:'Chivo Mono',monospace;font-weight:600;font-size:24px;letter-spacing:-.5px;">{{ ins.fitScore }}</span>
+                <span style="font-size:8.5px;color:rgba(242,244,248,.5);letter-spacing:.5px;">/ 100</span>
+              </div>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;">设备匹配度</div>
+              <p style="margin:5px 0 0;font-size:11.5px;line-height:1.5;color:rgba(242,244,248,.62);text-wrap:pretty;">{{ ins.fitNote }}</p>
+            </div>
+          </div>
+
+          <!-- bottleneck distribution -->
+          <div style="margin-top:12px;padding:16px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);">
+            <div style="font-size:13px;font-weight:600;margin-bottom:12px;">高频瓶颈分布 · 本次运行</div>
+            {{ distroWidget }}
+          </div>
+
+          <!-- top apps + peak hours -->
+          <div style="margin-top:12px;padding:16px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);">
+            <div style="font-size:13px;font-weight:600;margin-bottom:11px;">最重应用排行</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <sc-for list="{{ ins.topApps }}" as="a" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span style="font-family:'Chivo Mono',monospace;font-size:11px;color:rgba(242,244,248,.4);width:14px;">{{ a.rank }}</span>
+                  <span style="font-size:12.5px;font-weight:600;flex:1;">{{ a.name }}</span>
+                  <span style="font-size:10.5px;color:rgba(242,244,248,.5);background:rgba(255,255,255,.06);padding:1px 6px;border-radius:6px;">{{ a.group }}</span>
+                  <span style="font-family:'Chivo Mono',monospace;font-size:11.5px;color:rgba(242,244,248,.7);">{{ a.hrs }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;padding:16px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <span style="font-size:13px;font-weight:600;">高负载时段</span>
+              <span style="font-size:11px;color:rgba(242,244,248,.5);">{{ ins.peakNote }}</span>
+            </div>
+            {{ peakWidget }}
+            <div style="display:flex;justify-content:space-between;margin-top:6px;font-family:'Chivo Mono',monospace;font-size:9.5px;color:rgba(242,244,248,.38);">
+              <span>0</span><span>6</span><span>12</span><span>18</span><span>24</span>
+            </div>
+          </div>
+
+          <div class="rm-tap" onClick="{{ openUpgrade }}" style="margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:99px;background:linear-gradient(90deg,#5B8DEF,#8B5CF6);color:#fff;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(124,92,246,.3);">
+            生成升级建议 <span>→</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ══════════ UPGRADE ══════════ -->
+      <sc-if value="{{ isUpgrade }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 18px 22px;animation:viewIn .22s ease;">
+          <div class="rm-tap" onClick="{{ backFromUpgrade }}" style="display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(242,244,248,.6);cursor:pointer;margin-bottom:14px;">
+            <span>←</span> 返回
+          </div>
+
+          <!-- verdict card -->
+          <div style="{{ upgradeVerdictStyle }}">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <span style="font-size:11px;font-weight:600;letter-spacing:.4px;color:rgba(242,244,248,.55);">升级判断</span>
+              <span style="font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:99px;background:{{ up.confColor }}22;color:{{ up.confColor }};border:1px solid {{ up.confColor }}55;">置信度 {{ up.confidence }}</span>
+            </div>
+            <p style="margin:0;font-size:17px;font-weight:700;line-height:1.4;letter-spacing:-.3px;text-wrap:balance;">{{ up.verdict }}</p>
+          </div>
+
+          <!-- priority axes -->
+          <div style="margin-top:12px;">
+            <div style="font-size:12px;font-weight:600;color:rgba(242,244,248,.62);margin-bottom:9px;">优先升级维度</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              <sc-for list="{{ up.axes }}" as="ax" hint-placeholder-count="3">
+                <div style="{{ ax.style }}">
+                  <span style="font-size:12px;font-weight:600;">{{ ax.label }}</span>
+                  <span style="font-size:9.5px;opacity:.7;">{{ ax.tag }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <!-- immediate actions -->
+          <div style="margin-top:14px;padding:15px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);">
+            <div style="font-size:12.5px;font-weight:600;margin-bottom:10px;">现在可以先这样做</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <sc-for list="{{ up.actions }}" as="act" hint-placeholder-count="3">
+                <div style="display:flex;gap:9px;align-items:flex-start;">
+                  <span style="flex:none;margin-top:2px;width:16px;height:16px;border-radius:6px;background:{{ heroColorMain }}22;color:{{ heroColorMain }};font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;">{{ act.rank }}</span>
+                  <span style="font-size:11.8px;line-height:1.45;color:rgba(242,244,248,.78);">{{ act.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <!-- shopping direction -->
+          <div style="margin-top:12px;padding:15px;border-radius:14px;background:linear-gradient(150deg,rgba(91,141,239,.10),rgba(255,255,255,.03));border:1px solid rgba(91,141,239,.20);">
+            <div style="font-size:12.5px;font-weight:600;margin-bottom:10px;">下一台电脑重点看</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <sc-for list="{{ up.shoppingTips }}" as="tip" hint-placeholder-count="4">
+                <div style="padding:10px;border-radius:11px;background:rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.06);min-width:0;">
+                  <div style="font-size:10px;color:rgba(242,244,248,.45);font-weight:600;">{{ tip.label }}</div>
+                  <div style="font-size:12px;line-height:1.35;font-weight:650;color:rgba(242,244,248,.88);margin-top:3px;text-wrap:balance;">{{ tip.value }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <!-- evidence chain -->
+          <div style="margin-top:14px;padding:15px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);">
+            <div style="font-size:12.5px;font-weight:600;margin-bottom:10px;">证据链 · 本次运行</div>
+            <div style="display:flex;flex-direction:column;gap:9px;">
+              <sc-for list="{{ up.evidence }}" as="ev" hint-placeholder-count="3">
+                <div style="display:flex;gap:9px;align-items:flex-start;">
+                  <span style="flex:none;margin-top:2px;width:6px;height:6px;border-radius:99px;background:{{ heroColorMain }};"></span>
+                  <span style="font-size:11.5px;line-height:1.45;color:rgba(242,244,248,.78);font-family:'Chivo Mono',monospace;">{{ ev }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <!-- current vs recommended -->
+          <div style="margin-top:12px;padding:15px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;">
+              <span style="font-size:10.5px;font-weight:600;letter-spacing:.3px;color:rgba(242,244,248,.45);">当前设备</span>
+              <span style="font-size:10.5px;font-weight:600;letter-spacing:.3px;color:{{ heroColorMain }};">推荐区间</span>
+            </div>
+            <sc-for list="{{ up.compare }}" as="row" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:7px 0;border-top:1px solid rgba(255,255,255,.05);">
+                <div>
+                  <div style="font-size:9.5px;color:rgba(242,244,248,.42);">{{ row.label }}</div>
+                  <div style="font-family:'Chivo Mono',monospace;font-size:12.5px;font-weight:600;">{{ row.current }}</div>
+                </div>
+                <div>
+                  <div style="font-size:9.5px;color:rgba(242,244,248,.42);">{{ row.label }}</div>
+                  <div style="font-family:'Chivo Mono',monospace;font-size:12.5px;font-weight:600;color:{{ row.recColor }};">{{ row.recommend }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <!-- risk disclosure -->
+          <div style="margin-top:12px;padding:13px 14px;border-radius:12px;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.18);">
+            <div style="font-size:11.5px;font-weight:600;color:#FBBF24;margin-bottom:4px;">⚠ 推荐说明</div>
+            <p style="margin:0;font-size:11px;line-height:1.5;color:rgba(242,244,248,.65);text-wrap:pretty;">{{ up.risk }}</p>
+          </div>
+
+          <!-- search -->
+          <div class="rm-tap" onClick="{{ openUpgradeSearch }}" style="margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:99px;background:linear-gradient(90deg,rgba(91,141,239,.18),rgba(139,92,246,.16));border:1px solid rgba(124,143,240,.28);color:#DDE6FF;font-size:12.5px;font-weight:650;cursor:pointer;">
+            {{ upgradeSearchLabel }}
+          </div>
+          <p style="margin:9px 4px 0;font-size:10px;line-height:1.5;color:rgba(242,244,248,.38);text-align:center;">默认不联网。只有点击上方按钮时，才会用默认浏览器打开搜索；未来若接入返佣会明确披露。</p>
+        </div>
+      </sc-if>
+
+      <!-- ══════════ SETTINGS ══════════ -->
+      <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 18px 22px;animation:viewIn .22s ease;">
+          <div style="font-size:13.5px;font-weight:700;margin-bottom:14px;">设置</div>
+
+          <!-- sampling -->
+          <div style="padding:15px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div>
+                <div style="font-size:13px;font-weight:600;">采样频率</div>
+                <div style="font-size:11px;color:rgba(242,244,248,.5);margin-top:2px;">更高频率更实时，但会略增自身开销</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:4px;background:rgba(0,0,0,.2);border-radius:10px;padding:3px;margin-top:11px;">
+              <sc-for list="{{ sampleOptions }}" as="o" hint-placeholder-count="3">
+                <div class="rm-tap" onClick="{{ o.onClick }}" style="{{ o.style }}">{{ o.label }}</div>
+              </sc-for>
+            </div>
+          </div>
+
+          <!-- toggles -->
+          <div style="margin-top:12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);overflow:hidden;">
+            <sc-for list="{{ toggles }}" as="tg" hint-placeholder-count="3">
+              <div class="rm-tap" onClick="{{ tg.onClick }}" style="display:flex;align-items:center;justify-content:space-between;padding:14px 15px;border-bottom:1px solid rgba(255,255,255,.05);">
+                <div style="padding-right:12px;">
+                  <div style="font-size:12.5px;font-weight:600;">{{ tg.label }}</div>
+                  <div style="font-size:10.5px;color:rgba(242,244,248,.5);margin-top:2px;text-wrap:pretty;">{{ tg.desc }}</div>
+                </div>
+                <div style="{{ tg.trackStyle }}"><div style="{{ tg.knobStyle }}"></div></div>
+              </div>
+            </sc-for>
+          </div>
+
+          <!-- data retention -->
+          <div style="margin-top:12px;padding:15px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);">
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px;">数据保留</div>
+            <div style="display:flex;flex-direction:column;gap:7px;font-size:11.5px;color:rgba(242,244,248,.6);">
+              <div style="display:flex;justify-content:space-between;"><span>原始采样</span><span style="font-family:'Chivo Mono',monospace;">24 小时</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>分钟聚合</span><span style="font-family:'Chivo Mono',monospace;">30 天</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>小时聚合</span><span style="font-family:'Chivo Mono',monospace;">1 年</span></div>
+            </div>
+            <div class="rm-tap" style="margin-top:12px;text-align:center;padding:9px;border-radius:10px;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.25);color:#FB7185;font-size:11.5px;font-weight:600;cursor:pointer;">清除全部本地数据</div>
+          </div>
+
+          <!-- privacy card -->
+          <div style="margin-top:12px;padding:16px;border-radius:14px;background:linear-gradient(135deg,rgba(52,211,153,.08),rgba(45,212,191,.05));border:1px solid rgba(52,211,153,.22);">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+              {{ shieldIcon }}
+              <span style="font-size:13px;font-weight:700;">隐私 · 本地优先</span>
+            </div>
+            <p style="margin:0 0 12px;font-size:11.5px;line-height:1.5;color:rgba(242,244,248,.7);text-wrap:pretty;">所有监控数据默认仅保存在本机，默认不联网、不上传、无需账号。</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div>
+                <div style="font-size:10.5px;font-weight:700;color:#34D399;margin-bottom:6px;">✓ 会采集</div>
+                <div style="display:flex;flex-direction:column;gap:4px;font-size:10.5px;color:rgba(242,244,248,.62);line-height:1.4;">
+                  <span>进程 / 应用名</span><span>CPU / GPU / 内存 / 存储指标</span><span>瓶颈事件元数据</span>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:10.5px;font-weight:700;color:#FB7185;margin-bottom:6px;">✕ 不采集</div>
+                <div style="display:flex;flex-direction:column;gap:4px;font-size:10.5px;color:rgba(242,244,248,.62);line-height:1.4;">
+                  <span>代码 / 文件内容</span><span>终端 / prompt / 语音</span><span>屏幕截图 / 网页内容</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p style="margin:16px 4px 0;text-align:center;font-size:10px;color:rgba(242,244,248,.32);font-family:'Chivo Mono',monospace;">Local Compute Monitor · v0.1 原型</p>
+        </div>
+      </sc-if>
+
+    </div>
+
+    <!-- bottom nav (fixed) -->
+    <div style="position:relative;z-index:2;flex:none;height:60px;display:flex;align-items:stretch;border-top:1px solid rgba(255,255,255,.07);background:rgba(10,13,18,.6);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="4">
+        <div class="rm-tap" onClick="{{ n.onClick }}" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:{{ n.color }};">
+          {{ n.iconEl }}
+          <span style="font-size:10px;font-weight:600;letter-spacing:.2px;">{{ n.label }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    view: 'overview',
+    detailsTab: 'cpu',
+    sort: 'cpu',
+    evidenceOpen: false,
+    animScore: 0,
+    sampleRate: '5s',
+    toggles: { launch: true, grouping: true, network: false },
+    upgradeSearchClicked: false,
+    liveScene: null,
+    apiStatus: 'connecting',
+    apiMessage: '正在连接本地后端',
+    lastUpdated: '—',
+  };
+
+  API_BASE = 'http://127.0.0.1:8765';
+
+  componentDidMount() {
+    this.tweenTo(this.scen().score);
+    this.refreshLive();
+    this._poll = setInterval(() => this.refreshLive(), 5000);
+  }
+
+  componentWillUnmount() {
+    if (this._timer) clearInterval(this._timer);
+    if (this._poll) clearInterval(this._poll);
+  }
+
+  // ───────── tween for hero ring (setInterval — rAF is throttled here) ─────────
+  tweenTo(target) {
+    if (this._timer) clearInterval(this._timer);
+    const start = this.state.animScore, t0 = Date.now(), dur = 650;
+    const ease = (x) => 1 - Math.pow(1 - x, 3);
+    this._timer = setInterval(() => {
+      const k = Math.min(1, (Date.now() - t0) / dur);
+      this.setState({ animScore: Math.round(start + (target - start) * ease(k)) });
+      if (k >= 1) { clearInterval(this._timer); this._timer = null; }
+    }, 16);
+  }
+
+  setView(v) { this.setState({ view: v }); }
+  openDetails(tab) { this.setState({ view: 'details', detailsTab: tab }); }
+  openUpgradeSearch() {
+    const query = (this.scen().up && this.scen().up.searchQuery) || 'MacBook Pro 32GB unified memory AI coding';
+    window.open('https://www.google.com/search?q=' + encodeURIComponent(query), '_blank', 'noopener');
+    this.setState({ upgradeSearchClicked: true });
+    setTimeout(() => this.setState({ upgradeSearchClicked: false }), 1800);
+  }
+
+  scen() {
+    return this.state.liveScene || this.loadingScene();
+  }
+
+  async refreshLive() {
+    try {
+      const res = await fetch(this.API_BASE + '/dashboard/current?refresh=true', { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const payload = await res.json();
+      const updatedAt = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+      const liveScene = this.mapDashboardToScene(payload, updatedAt);
+      this.setState({
+        liveScene,
+        apiStatus: 'connected',
+        apiMessage: '实时数据已连接',
+        lastUpdated: updatedAt,
+      }, () => {
+        this.tweenTo(liveScene.score);
+      });
+    } catch (err) {
+      const fallback = this.state.liveScene || this.loadingScene();
+      this.setState({
+        liveScene: {
+          ...fallback,
+          key: 'live',
+          heroSub: this.state.liveScene ? '无法连接本地后端，正在显示最近一次实时数据。' : '无法连接本地后端，请先启动本地采集服务。',
+          bottleneck: {
+            ...fallback.bottleneck,
+            evidence: ['API: ' + (err && err.message ? err.message : String(err)), ...fallback.bottleneck.evidence.slice(0, 2)],
+          },
+        },
+        apiStatus: 'offline',
+        apiMessage: '后端未连接',
+      });
+    }
+  }
+
+  mapDashboardToScene(payload, updatedAt) {
+    const metrics = payload.metrics || {};
+    const event = payload.bottleneck || {};
+    const profile = payload.profile || {};
+    const recommendation = payload.recommendation || {};
+    const top = payload.top_processes || {};
+    const history = payload.history || [];
+
+    const cpu = metrics.cpu || {};
+    const gpu = metrics.gpu || {};
+    const mem = metrics.memory || {};
+    const storage = metrics.storage || {};
+    const thermal = metrics.thermal || {};
+    const type = event.primary_type || event.type || 'normal';
+    const severity = event.severity || 'normal';
+    const tone = this.toneFromEvent(type, severity);
+    const score = this.scoreFromEvent(type, severity, profile.device_fit_score);
+    const cpuPct = this.num(cpu.total_percent, 0);
+    const memUsed = this.num(mem.used_gb, 0);
+    const memTotal = this.num(mem.physical_gb, 16);
+    const storageTotal = Math.round(this.num(storage.total_gb, 0));
+    const storageFree = Math.round(this.num(storage.free_gb, 0));
+    const storageUsed = Math.max(0, storageTotal - storageFree);
+    const cpuTrend = this.historyTrend(history, (m) => m.cpu && m.cpu.total_percent, cpuPct);
+    const ramTrend = this.historyTrend(history, (m) => m.memory && m.memory.used_gb, memUsed);
+    const gpuTrend = gpu.available ? this.historyTrend(history, (m) => m.gpu && m.gpu.usage_percent, this.num(gpu.usage_percent, 0)) : [0,0,0,0,0,0,0,0,0,0];
+    const topCpu = (top.cpu || []).slice(0, 4).map((p) => [this.procName(p), this.groupName(p.app_group), Math.round(this.num(p.cpu_percent, 0))]);
+    const topMem = (top.memory || []).slice(0, 4).map((p) => [this.procName(p), this.groupName(p.app_group), Math.round(this.num(p.memory_mb, 0))]);
+
+    return {
+      key: 'live',
+      statusWord: type === 'normal' ? '健康' : severity === 'critical' ? '严重' : '瓶颈',
+      deviceName: this.deviceName(metrics),
+      tone,
+      score,
+      hero: event.summary || '正在读取本机资源状态。',
+      heroSub: '实时数据 · ' + (updatedAt || '刚刚') + ' · ' + (metrics.workload_hint || 'general'),
+      cpu: {
+        pct: Math.round(cpuPct),
+        sys: Math.round(this.num(cpu.system_percent, 0)),
+        user: Math.round(this.num(cpu.user_percent, 0)),
+        idle: Math.round(this.num(cpu.idle_percent, Math.max(0, 100 - cpuPct))),
+        cores: this.coreValues(cpu.cores, cpuPct, cpu.logical_cores),
+        status: this.statusFromCpu(cpuPct),
+        trend: cpuTrend,
+        procs: topCpu.length ? topCpu : [['—','暂无数据',0]],
+      },
+      gpu: {
+        available: !!gpu.available,
+        pct: Math.round(this.num(gpu.usage_percent, 0)),
+        status: gpu.available ? this.statusFromPercent(this.num(gpu.usage_percent, 0)) : 'healthy',
+        trend: gpuTrend,
+        procs: [['需要授权','powermetrics',0]],
+      },
+      ram: {
+        used: memUsed,
+        total: memTotal,
+        app: this.num(mem.app_gb, 0),
+        wired: this.num(mem.wired_gb, 0),
+        compressed: this.num(mem.compressed_gb, 0),
+        cached: this.num(mem.cached_gb, 0),
+        swap: this.num(mem.swap_gb, 0),
+        pressure: this.memoryPressure(mem.pressure),
+        status: this.statusFromMemory(mem),
+        trend: ramTrend,
+        procs: topMem.length ? topMem : [['—','暂无数据',0]],
+      },
+      storage: {
+        total: storageTotal,
+        used: storageUsed,
+        free: storageFree,
+        important: storageFree,
+        status: this.statusFromStorage(storage.free_percent),
+        growth: '实时',
+        dirs: [['当前磁盘','系统卷', storageFree + ' GB 可用'], ['采样来源', storage.source || 'system', '实时']],
+      },
+      thermal: {
+        state: thermal.state || 'unknown',
+        word: this.thermalWord(thermal.state),
+        status: this.statusFromThermal(thermal.state),
+        plugged: typeof thermal.plugged === 'boolean' ? thermal.plugged : null,
+        sustained: 0,
+        note: thermal.raw || thermal.reason || '热状态来自本地后端。',
+        stripNote: this.thermalStrip(thermal.state),
+      },
+      bottleneck: {
+        present: type !== 'normal',
+        tone,
+        title: this.bottleneckTitle(type),
+        lead: event.summary || '当前没有检测到明确瓶颈。',
+        evidence: event.evidence && event.evidence.length ? event.evidence : ['后端已连接', '暂无明确瓶颈证据'],
+        recommendations: event.recommendations && event.recommendations.length ? event.recommendations : ['继续观察即可'],
+        showHardware: type !== 'normal',
+      },
+      ins: this.mapProfile(profile, topMem, tone),
+      up: this.mapRecommendation(recommendation, metrics, tone),
+    };
+  }
+
+  mapProfile(profile, topMem, tone) {
+    const counts = profile.bottleneck_counts || {};
+    const rows = [
+      ['内存', counts.ram_bound || 0, '#FBBF24'],
+      ['CPU', (counts.cpu_bound || 0) + (counts.single_core_bound || 0), '#FB7185'],
+      ['GPU', counts.gpu_bound || 0, '#5B8DEF'],
+      ['散热', counts.thermal_bound || 0, '#F43F5E'],
+      ['存储', counts.storage_bound || 0, '#A78BFA'],
+    ];
+    const apps = topMem.slice(0, 4).map((row) => [
+      row[0],
+      row[1] || '进程',
+      row[2] >= 1000 ? (row[2]/1000).toFixed(1) + 'GB' : row[2] + 'MB',
+    ]);
+    const sampleCount = profile.sample_count || 0;
+    const eventCount = profile.bottleneck_event_count || 0;
+    return {
+      period: this.periodLabel(profile.period, sampleCount),
+      primaryType: this.userTypeLabel(profile.primary_user_type),
+      secondaryType: this.userTypeLabel(profile.secondary_user_type),
+      fitScore: profile.device_fit_score || 70,
+      fitTone: this.toneFromScore(profile.device_fit_score || 70),
+      summary: profile.summary || '本地后端正在积累你的使用画像。',
+      fitNote: profile.device_fit_score < 70 ? '设备匹配度偏低，建议观察长期瓶颈趋势。' : '当前设备基本能覆盖你的工作流。',
+      distro: rows,
+      topApps: apps.length ? apps : [['暂无数据','进程','—']],
+      peak: Array.isArray(profile.hourly_bottlenecks) ? profile.hourly_bottlenecks : Array(24).fill(0),
+      peakNote: eventCount ? eventCount + ' 个瓶颈事件' : '暂无瓶颈事件',
+    };
+  }
+
+  mapRecommendation(rec, metrics, tone) {
+    const axis = rec.primary_upgrade_axis || 'none';
+    const secondary = rec.secondary_upgrade_axis;
+    const axes = [[this.axisLabel(axis), '主升级轴', axis !== 'none']];
+    if (secondary) axes.push([this.axisLabel(secondary), '次升级轴', true]);
+    axes.push(['联网搜索', rec.network_search_enabled ? '已开启' : '默认关闭', false]);
+    const mem = metrics.memory || {}, storage = metrics.storage || {}, cpu = metrics.cpu || {};
+    const advice = this.upgradeAdvice(axis);
+    return {
+      tone,
+      verdict: rec.recommendation || '当前没有足够证据建议升级，先继续观察。',
+      confidence: rec.confidence === 'high' ? '高' : rec.confidence === 'medium' ? '中' : '低',
+      confColor: rec.confidence === 'high' ? '#34D399' : rec.confidence === 'medium' ? '#FBBF24' : '#94A3B8',
+      axes,
+      evidence: rec.evidence && rec.evidence.length ? rec.evidence : ['后端正在积累升级建议证据'],
+      compare: [
+        ['内存', this.num(mem.physical_gb, 0) + ' GB', axis === 'ram' ? '≥ 32 GB' : '继续观察'],
+        ['CPU', Math.round(this.num(cpu.total_percent, 0)) + '% 当前负载', axis === 'cpu' ? '更多性能核心' : '按需'],
+        ['存储', Math.round(this.num(storage.free_gb, 0)) + ' GB 可用', axis === 'storage' ? '更大 SSD' : '保留 10%+ 空间'],
+        ['散热', (metrics.thermal && metrics.thermal.state) || 'unknown', axis === 'thermal' ? '主动散热' : '按需'],
+      ],
+      actions: advice.actions,
+      shoppingTips: advice.shoppingTips,
+      searchQuery: advice.searchQuery,
+      risk: (rec.not_recommended || []).join('；') || '推荐依赖当前使用模式，未来工作流变化后需要重新评估。',
+    };
+  }
+
+  upgradeAdvice(axis) {
+    const base = {
+      ram: {
+        actions: ['先关掉不用的浏览器标签页、Agent 会话和本地模型。', '如果经常出现 swap，下一台设备优先 32GB 或 64GB 统一内存。', '把视频导出、本地模型和多 Agent 任务错峰运行。'],
+        shoppingTips: [['内存', '32GB 起步，重度 AI/剪辑看 64GB'], ['芯片', 'Pro/Max 级别优先'], ['存储', '1TB 起步，保留缓存空间'], ['散热', '长任务优先有风扇机型']],
+        searchQuery: 'MacBook Pro 32GB 64GB unified memory AI coding'
+      },
+      cpu: {
+        actions: ['编译、测试或批量任务运行时，先减少并发数量。', '下一台设备优先看更多性能核心，而不是只看外观和重量。', '长任务尽量接电运行，并给机身留出散热空间。'],
+        shoppingTips: [['CPU', '更多性能核心'], ['内存', '至少 32GB'], ['散热', '优先主动散热'], ['适合', '编译、测试、多任务']],
+        searchQuery: 'MacBook Pro more performance cores compile test workload'
+      },
+      cpu_single_core: {
+        actions: ['先找出长期卡住单个核心的应用或脚本。', '能并行的任务尽量拆开并行跑。', '下一台设备优先关注单核性能，不只看核心数量。'],
+        shoppingTips: [['CPU', '单核性能优先'], ['内存', '至少 24GB-32GB'], ['散热', '稳定频率更重要'], ['适合', '老项目、脚本、单线程任务']],
+        searchQuery: 'Mac best single core performance development'
+      },
+      gpu: {
+        actions: ['本地模型先降低并发、上下文或批量大小。', '视频导出和本地模型尽量不要同时跑。', '下一台设备优先更强 GPU 和更大统一内存，必要时考虑云端 GPU。'],
+        shoppingTips: [['GPU', '更多 GPU 核心'], ['内存', '32GB 起步，模型任务看 64GB+'], ['芯片', 'Pro/Max/Ultra 级别'], ['适合', '本地模型、剪辑、图形任务']],
+        searchQuery: 'MacBook Pro Max GPU unified memory local AI video editing'
+      },
+      storage: {
+        actions: ['先清理下载、缓存、构建产物和大型导出文件。', '把可用空间长期保持在 10%-15% 以上。', '下一台设备优先更大 SSD，避免小容量机器长期顶满。'],
+        shoppingTips: [['存储', '1TB 起步，重度素材看 2TB'], ['内存', '至少 24GB-32GB'], ['习惯', '给缓存和 swap 留空间'], ['适合', '视频、模型、Docker']],
+        searchQuery: 'MacBook Pro 1TB 2TB SSD developer video AI workload'
+      },
+      thermal: {
+        actions: ['长时间任务先降低并发，避免持续满载。', '接电运行，并保持机身周围通风。', '下一台设备优先有主动散热的 Pro 机型。'],
+        shoppingTips: [['散热', '有风扇优先'], ['芯片', 'Pro/Max 机型更稳'], ['重量', '别只追求最轻薄'], ['适合', '长时间 Agent、编译、导出']],
+        searchQuery: 'MacBook Pro active cooling sustained performance AI coding'
+      },
+      balanced: {
+        actions: ['先看证据链里出现最多的瓶颈。', '内存、CPU、散热和存储一起评估，不要只看单项跑分。', '连续观察几天后再决定下一台设备配置。'],
+        shoppingTips: [['内存', '32GB 起步'], ['CPU/GPU', 'Pro 级别更均衡'], ['存储', '1TB 起步'], ['散热', '主动散热更稳']],
+        searchQuery: 'MacBook Pro 32GB 1TB balanced AI developer workload'
+      },
+      none: {
+        actions: ['先继续使用并积累几天样本。', '没有连续瓶颈前，不建议因为短时峰值换电脑。', '保持 10% 以上可用磁盘空间。'],
+        shoppingTips: [['结论', '暂时不用急着升级'], ['内存', '下一台至少不低于当前'], ['存储', '按素材和项目大小选择'], ['观察', '等高置信度建议出现']],
+        searchQuery: 'Mac hardware upgrade guide unified memory storage'
+      },
+    };
+    return base[axis] || base.none;
+  }
+
+  num(v, fallback) { const n = Number(v); return Number.isFinite(n) ? n : fallback; }
+  procName(p) { return (p.process_name || 'Unknown').replace(/\s+/g, ' ').trim(); }
+  groupName(g) {
+    const map = {'Agent Coding':'Agent Coding','Browser Heavy':'浏览器','Local Model':'本地模型','Video Editing':'视频剪辑','Compile / Build':'编译构建','Docker / Infra':'基础设施','IDE':'编辑器','Other':'进程'};
+    return map[g] || g || '进程';
+  }
+  deviceName(metrics) {
+    const host = metrics.host || {};
+    const mem = metrics.memory || {};
+    const bits = [host.machine || 'Mac', mem.physical_gb ? Math.round(mem.physical_gb) + 'GB' : null].filter(Boolean);
+    return bits.join(' · ');
+  }
+  historyTrend(history, getter, fallback) {
+    const vals = history.map((m) => this.num(getter(m), NaN)).filter(Number.isFinite).slice(-12);
+    while (vals.length < 10) vals.unshift(fallback);
+    return vals.map((v) => Math.round(v * 10) / 10);
+  }
+  coreValues(cores, fallback, logical) {
+    if (Array.isArray(cores) && cores.length) return cores.map((v) => Math.round(this.num(v, fallback)));
+    const count = Math.max(1, Math.min(64, this.num(logical, 8)));
+    return Array.from({ length: count }, (_, i) => Math.max(0, Math.min(100, Math.round(fallback + ((i % 3) - 1) * 6))));
+  }
+  toneFromEvent(type, severity) {
+    if (severity === 'critical') return 'critical';
+    if (type === 'normal') return 'healthy';
+    if (severity === 'high' || type === 'mixed_bound') return 'bottleneck';
+    return 'busy';
+  }
+  toneFromScore(score) { return score >= 80 ? 'healthy' : score >= 65 ? 'busy' : score >= 50 ? 'bottleneck' : 'critical'; }
+  toneFromUsage(value) { return value >= 88 ? 'critical' : value >= 72 ? 'bottleneck' : value >= 55 ? 'busy' : 'healthy'; }
+  scoreFromEvent(type, severity, fit) {
+    if (Number.isFinite(Number(fit))) return Math.max(20, Math.min(95, Math.round(Number(fit))));
+    if (severity === 'critical') return 38;
+    if (severity === 'high') return 52;
+    if (severity === 'medium') return 68;
+    return type === 'normal' ? 88 : 62;
+  }
+  statusFromPercent(v) { return v >= 90 ? 'bottleneck' : v >= 70 ? 'busy' : 'healthy'; }
+  statusFromCpu(v) { return v >= 85 ? 'bottleneck' : v >= 70 ? 'busy' : 'healthy'; }
+  statusFromMemory(mem) {
+    const pressure = this.memoryPressure(mem.pressure);
+    if (pressure === 'red') return 'critical';
+    if (pressure === 'yellow' || this.num(mem.swap_gb, 0) > 1 || this.num(mem.percent, 0) > 88) return 'busy';
+    return 'healthy';
+  }
+  statusFromStorage(freePct) { const v = this.num(freePct, 100); return v < 5 ? 'bottleneck' : v < 10 ? 'busy' : 'healthy'; }
+  statusFromThermal(state) { return state === 'critical' || state === 'serious' ? 'critical' : state === 'fair' ? 'busy' : 'healthy'; }
+  memoryPressure(p) { return p === 'red' ? 'red' : p === 'yellow' ? 'yellow' : 'normal'; }
+  thermalWord(state) { return state === 'critical' ? '严重' : state === 'serious' ? '偏高' : state === 'fair' ? '轻微升温' : state === 'nominal' ? '正常' : '未知'; }
+  thermalStrip(state) {
+    if (state === 'serious' || state === 'critical') return '热压力偏高，持续性能可能下降。';
+    if (state === 'fair') return '检测到轻微热压力，继续观察持续负载。';
+    if (state === 'nominal') return '温度正常，性能未受限。';
+    return '当前无法读取热状态。';
+  }
+  bottleneckTitle(type) {
+    const map = {normal:'未检测到瓶颈', ram_bound:'内存正在成为瓶颈', cpu_bound:'CPU 正在满载', single_core_bound:'单核心压力过高', gpu_bound:'GPU 正在满载', storage_bound:'存储空间偏低', thermal_bound:'设备热压力较高', mixed_bound:'检测到混合瓶颈'};
+    return map[type] || '检测到资源瓶颈';
+  }
+  axisLabel(axis) {
+    const map = {ram:'内存', cpu:'CPU', cpu_single_core:'单核性能', gpu:'GPU', storage:'存储', thermal:'散热', balanced:'综合', none:'暂无'};
+    return map[axis] || axis || '暂无';
+  }
+  userTypeLabel(type) {
+    const map = {
+      multi_agent_memory_bound:'经常同时开很多 AI 工具',
+      memory_hungry:'开多了应用容易卡',
+      compile_build_or_multi_agent:'经常编译或跑批量任务',
+      single_thread_bound:'容易被单个任务拖慢',
+      local_model_or_creator:'本地模型或视频任务较多',
+      storage_constrained:'磁盘空间经常不够',
+      thermal_limited:'长时间运行容易发热降速',
+      lightweight_or_balanced:'日常使用比较轻',
+      agent_coding:'经常使用 AI 编程工具',
+      browser_heavy:'浏览器标签页很多',
+      local_model:'经常跑本地模型',
+      video_editing:'视频剪辑或导出较多',
+      compile_build:'经常编译或构建项目',
+      docker_infra:'经常跑 Docker 或本地服务',
+      ide:'长时间使用编辑器',
+      other:'其他使用场景',
+      unknown:'还在观察'
+    };
+    return map[type] || '还在观察';
+  }
+  usageScore(s) {
+    const clamp = (v) => Math.max(0, Math.min(100, Math.round(this.num(v, 0))));
+    const cpu = clamp(s.cpu && s.cpu.pct);
+    const ram = s.ram && s.ram.total > 0 ? clamp((s.ram.used / s.ram.total) * 100) : 0;
+    const storage = s.storage && s.storage.total > 0 ? clamp((s.storage.used / s.storage.total) * 100) : 0;
+    if (s.gpu && s.gpu.available) {
+      const gpu = clamp(s.gpu.pct);
+      return clamp(cpu * 0.35 + ram * 0.35 + gpu * 0.20 + storage * 0.10);
+    }
+    return clamp(cpu * 0.45 + ram * 0.45 + storage * 0.10);
+  }
+  periodLabel(period, sampleCount) {
+    if (period === 'runtime' || period === 'current') return '本次运行 · ' + sampleCount + ' 个样本';
+    return period || '本次运行';
+  }
+  formatMenuTime() {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('en-US', { month: 'short' });
+    const year = String(date.getFullYear()).slice(-2);
+    const time = date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false });
+    return day + '/' + month + '/' + year + ' ' + time;
+  }
+  loadingScene() {
+    const base = this.SCEN.normal;
+    return {
+      ...base,
+      key: 'live',
+      statusWord: '连接中',
+      deviceName: '等待本地采集',
+      tone: 'healthy',
+      score: 0,
+      hero: '正在连接本地后端。',
+      heroSub: '启动后会显示本机实时 CPU、GPU、内存、存储与散热状态。',
+      cpu: {
+        pct: 0,
+        sys: 0,
+        user: 0,
+        idle: 0,
+        cores: [],
+        status: 'healthy',
+        trend: Array(10).fill(0),
+        procs: [['—','等待数据',0]],
+      },
+      gpu: {
+        available: false,
+        pct: 0,
+        status: 'healthy',
+        trend: Array(10).fill(0),
+        procs: [['—','等待数据',0]],
+      },
+      ram: {
+        used: 0,
+        total: 0,
+        app: 0,
+        wired: 0,
+        compressed: 0,
+        cached: 0,
+        swap: 0,
+        pressure: 'normal',
+        status: 'healthy',
+        trend: Array(10).fill(0),
+        procs: [['—','等待数据',0]],
+      },
+      storage: {
+        total: 0,
+        used: 0,
+        free: 0,
+        important: 0,
+        status: 'healthy',
+        growth: '等待数据',
+        dirs: [['当前磁盘','等待后端连接','—']],
+      },
+      thermal: {
+        state: 'unknown',
+        word: '等待数据',
+        status: 'healthy',
+        plugged: null,
+        sustained: 0,
+        note: '等待本地采集服务返回热状态。',
+        stripNote: '等待热状态数据。',
+      },
+      bottleneck: {
+        ...base.bottleneck,
+        present: false,
+        title: '等待实时数据',
+        lead: '本地采集服务连接后，这里会显示当前瓶颈判断。',
+        evidence: ['等待 /dashboard/current 返回实时样本'],
+        recommendations: ['请确认本地后端服务已启动'],
+      },
+      ins: {
+        ...base.ins,
+        period: '本次运行 · 0 个样本',
+        summary: '等待本地后端采样。',
+        distro: [['内存',0,'#FBBF24'],['CPU',0,'#FB7185'],['GPU',0,'#5B8DEF'],['散热',0,'#F43F5E'],['存储',0,'#A78BFA']],
+        peak: Array(24).fill(0),
+        peakNote: '暂无瓶颈事件',
+      },
+      up: {
+        ...base.up,
+        verdict: '等待实时采样后生成升级建议。',
+        confidence: '低',
+        axes: [['暂无','等待数据',false]],
+        evidence: ['等待本机实时资源数据'],
+        compare: [['内存','—','等待数据'],['CPU','—','等待数据'],['存储','—','等待数据'],['散热','—','等待数据']],
+        actions: ['等待本机实时采样完成后生成建议'],
+        shoppingTips: [['结论','等待数据'],['内存','等待数据'],['存储','等待数据'],['散热','等待数据']],
+        searchQuery: 'Mac hardware upgrade guide unified memory storage',
+      },
+    };
+  }
+
+  // Neutral fallback used only before the local backend returns the first live sample.
+  SCEN = {
+    normal: {
+      key:'live', statusWord:'连接中', deviceName:'等待本地采集', tone:'healthy',
+      score:0, hero:'正在连接本地后端。', heroSub:'启动后会显示本机实时 CPU、GPU、内存、存储与散热状态。',
+      bottleneck:{ present:false, tone:'healthy', title:'等待实时数据', lead:'本地采集服务连接后，这里会显示当前瓶颈判断。',
+        evidence:['等待 /dashboard/current 返回实时样本'], recommendations:['请确认本地后端服务已启动'], showHardware:false },
+      ins:{ period:'本次运行 · 0 个样本', primaryType:'未知', secondaryType:'未知', fitScore:0, fitTone:'healthy',
+        summary:'等待本地后端采样。', fitNote:'等待实时采样后评估设备匹配度。',
+        distro:[['内存',0,'#FBBF24'],['CPU',0,'#FB7185'],['GPU',0,'#5B8DEF'],['散热',0,'#F43F5E'],['存储',0,'#A78BFA']],
+        topApps:[['暂无数据','进程','—']], peak:Array(24).fill(0), peakNote:'暂无瓶颈事件' },
+      up:{ tone:'healthy', verdict:'等待实时采样后生成升级建议。', confidence:'低', confColor:'#94A3B8',
+        axes:[['暂无','等待数据',false]], evidence:['等待本机实时资源数据'],
+        compare:[['内存','—','等待数据'],['CPU','—','等待数据'],['存储','—','等待数据'],['散热','—','等待数据']],
+        actions:['等待本机实时采样完成后生成建议'],
+        shoppingTips:[['结论','等待数据'],['内存','等待数据'],['存储','等待数据'],['散热','等待数据']],
+        searchQuery:'Mac hardware upgrade guide unified memory storage',
+        risk:'升级建议依赖本机实时采样。' },
+    },
+  };
+
+  // ════════════ RENDER ════════════
+  renderVals() {
+    const e = React.createElement;
+    let _uid = 0; const uid = () => 'g' + (_uid++);
+    const s = this.scen();
+    const TONE = {
+      healthy:{ main:'#34D399', from:'#2DD4BF', to:'#34D399' },
+      busy:{ main:'#FBBF24', from:'#F59E0B', to:'#FBBF24' },
+      bottleneck:{ main:'#FB7185', from:'#F97316', to:'#FB7185' },
+      critical:{ main:'#F43F5E', from:'#E11D48', to:'#F43F5E' },
+    };
+    const tone = TONE[s.tone];
+    const usageScore = this.usageScore(s);
+    const usageTone = TONE[this.toneFromUsage(usageScore)];
+    const colorOf = (st) => TONE[st] ? TONE[st].main : '#34D399';
+
+    // ── widgets ──
+    const ring = (size, stroke, pct, from, to, track) => {
+      const r = (size - stroke) / 2, c = 2 * Math.PI * r, off = c * (1 - Math.max(0, Math.min(100, pct)) / 100), gid = uid();
+      return e('svg', { width: size, height: size, viewBox: `0 0 ${size} ${size}`, style: { transform: 'rotate(-90deg)' } },
+        e('defs', null, e('linearGradient', { id: gid, x1: 0, y1: 0, x2: 1, y2: 1 },
+          e('stop', { offset: '0%', stopColor: from }), e('stop', { offset: '100%', stopColor: to }))),
+        e('circle', { cx: size/2, cy: size/2, r, fill: 'none', stroke: track || 'rgba(255,255,255,0.07)', strokeWidth: stroke }),
+        e('circle', { cx: size/2, cy: size/2, r, fill: 'none', stroke: `url(#${gid})`, strokeWidth: stroke, strokeLinecap: 'round',
+          strokeDasharray: c, strokeDashoffset: off, style: { transition: 'stroke-dashoffset .55s cubic-bezier(.2,.8,.2,1)' } }));
+    };
+    const spark = (data, color, h) => {
+      h = h || 30; const w = 130, max = Math.max(...data), min = Math.min(...data), rng = (max - min) || 1, gid = uid();
+      const pts = data.map((v, i) => [i / (data.length - 1) * w, (h - 3) - ((v - min) / rng) * (h - 8)]);
+      const d = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L ');
+      return e('svg', { width: '100%', height: h, viewBox: `0 0 ${w} ${h}`, preserveAspectRatio: 'none' },
+        e('defs', null, e('linearGradient', { id: gid, x1: 0, y1: 0, x2: 0, y2: 1 },
+          e('stop', { offset: '0%', stopColor: color, stopOpacity: .28 }), e('stop', { offset: '100%', stopColor: color, stopOpacity: 0 }))),
+        e('path', { d: d + ` L ${w} ${h} L 0 ${h} Z`, fill: `url(#${gid})` }),
+        e('path', { d, fill: 'none', stroke: color, strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' }));
+    };
+    const areaChart = (data, color, h) => {
+      h = h || 90; const w = 380, max = Math.max(...data) * 1.08, min = 0, rng = (max - min) || 1, gid = uid();
+      const pts = data.map((v, i) => [i / (data.length - 1) * w, (h - 4) - ((v - min) / rng) * (h - 12)]);
+      const d = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L ');
+      return e('svg', { width: '100%', height: h, viewBox: `0 0 ${w} ${h}`, preserveAspectRatio: 'none' },
+        e('defs', null, e('linearGradient', { id: gid, x1: 0, y1: 0, x2: 0, y2: 1 },
+          e('stop', { offset: '0%', stopColor: color, stopOpacity: .3 }), e('stop', { offset: '100%', stopColor: color, stopOpacity: 0 }))),
+        e('path', { d: d + ` L ${w} ${h} L 0 ${h} Z`, fill: `url(#${gid})` }),
+        e('path', { d, fill: 'none', stroke: color, strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }));
+    };
+    const heatColor = (p) => p >= 90 ? '#F43F5E' : p >= 75 ? '#FB7185' : p >= 55 ? '#FBBF24' : p >= 35 ? '#86c79b' : '#34D399';
+    const heatmap = (cores) => e('div', { style: { display: 'grid', gridTemplateColumns: `repeat(${Math.min(8, Math.max(4, Math.ceil((cores.length || 1) / 3)))},1fr)`, gap: '6px' } },
+      cores.map((p, i) => e('div', { key: i, title: p + '%', style: {
+        aspectRatio: '1', borderRadius: '7px', background: heatColor(p), opacity: .35 + (p / 100) * .65,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Chivo Mono',monospace", fontSize: '9px',
+        fontWeight: 600, color: 'rgba(0,0,0,.55)' } }, String(i + 1))));
+
+    // monoline svg icon
+    const ic = (paths, sz) => e('svg', { width: sz || 18, height: sz || 18, viewBox: '0 0 24 24', fill: 'none',
+      stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round' },
+      paths.map((d, i) => e('path', { key: i, d })));
+    const ICONS = {
+      cpu: () => ic(['M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3', 'M6 6h12v12H6z', 'M10 10h4v4h-4z']),
+      gpu: () => ic(['M3 6h18v10H3z', 'M3 16v3M7 19h10', 'M7 9h2M7 12h2', 'M13 10.5h4']),
+      ram: () => ic(['M3 8h18v8H3z', 'M6 16v2M10 16v2M14 16v2M18 16v2', 'M6 11h2M11 11h2M16 11h2']),
+      storage: () => ic(['M4 5h16v14H4z', 'M4 10h16', 'M8 7.5h.01', 'M8 14.5h6']),
+      thermal: () => ic(['M14 14.76V5a2 2 0 0 0-4 0v9.76', 'M8.5 14a4 4 0 1 0 7 0', 'M12 9v6']),
+      overview: () => ic(['M3 12a9 9 0 0 1 18 0', 'M12 12l4-3', 'M3 12h2M19 12h2M12 3v2']),
+      details: () => ic(['M4 6h16M4 12h16M4 18h10', 'M18 16v4M16 18h4']),
+      insights: () => ic(['M4 19V5', 'M4 19h16', 'M8 15l3-4 3 2 4-6']),
+      settings: () => ic(['M4 8h10M18 8h2', 'M4 16h4M12 16h8', 'M14 8a2 2 0 1 0 0-.01z', 'M8 16a2 2 0 1 0 0-.01z']),
+      chip: () => ic(['M9 3v2M15 3v2M9 19v2M15 19v2M3 9h2M3 15h2M19 9h2M19 15h2', 'M7 7h10v10H7z'], 15),
+      shield: () => ic(['M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z', 'M9.5 12l1.8 1.8L15 10']),
+      tray1: () => ic(['M2 12h4l2-5 3 10 2-5h4M18 12h4'], 15),
+      tray2: () => ic(['M5 7h14M5 12h14M5 17h8'], 14),
+    };
+
+    // ── resource cards ──
+    const baseCard = (hl, c) => ({
+      padding: '13px', borderRadius: '14px', cursor: 'pointer',
+      background: hl ? `linear-gradient(160deg, ${c}1c, rgba(255,255,255,.04))` : 'rgba(255,255,255,.04)',
+      border: '1px solid ' + (hl ? c + '66' : 'rgba(255,255,255,.08)'),
+      boxShadow: hl ? `0 0 22px ${c}22` : '0 4px 14px rgba(0,0,0,.18)',
+    });
+    const cards = [
+      { key:'cpu', name:'CPU', iconEl: ICONS.cpu(), value: s.cpu.pct, unit:'%', sub: s.cpu.cores.length + ' 核 · 负载',
+        dotColor: colorOf(s.cpu.status), style: baseCard(s.cpu.status!=='healthy', colorOf(s.cpu.status)),
+        sparkEl: spark(s.cpu.trend, colorOf(s.cpu.status)), onClick: () => this.openDetails('cpu') },
+      { key:'gpu', name:'GPU', iconEl: ICONS.gpu(), value: s.gpu.available ? s.gpu.pct : '—', unit: s.gpu.available?'%':'', sub: s.gpu.available?'图形 / 推理':'需要授权',
+        dotColor: colorOf(s.gpu.status), style: baseCard(s.gpu.status!=='healthy', colorOf(s.gpu.status)),
+        sparkEl: spark(s.gpu.trend, colorOf(s.gpu.status)), onClick: () => this.openDetails('gpu') },
+      { key:'ram', name:'内存', iconEl: ICONS.ram(), value: s.ram.used.toFixed(1), unit:'/ '+s.ram.total+'GB', sub: '压力 · ' + (s.ram.pressure==='normal'?'正常':s.ram.pressure==='yellow'?'偏高':'严重'),
+        dotColor: colorOf(s.ram.status), style: baseCard(s.ram.status!=='healthy', colorOf(s.ram.status)),
+        sparkEl: spark(s.ram.trend, colorOf(s.ram.status)), onClick: () => this.openDetails('ram') },
+      { key:'storage', name:'存储', iconEl: ICONS.storage(), value: s.storage.free, unit:'GB 可用', sub: '当前 '+s.storage.growth,
+        dotColor: colorOf(s.storage.status), style: baseCard(s.storage.status!=='healthy', colorOf(s.storage.status)),
+        sparkEl: spark([s.storage.total-s.storage.used+30,s.storage.free+18,s.storage.free+12,s.storage.free+8,s.storage.free+4,s.storage.free], colorOf(s.storage.status)), onClick: () => this.openDetails('storage') },
+    ];
+
+    // ── processes ──
+    const sortKey = this.state.sort;
+    let rawProcs = sortKey === 'cpu' ? s.cpu.procs : s.ram.procs;
+    const maxV = Math.max(1, ...rawProcs.map(p => p[2]));
+    const initialBg = (g) => g.includes('Agent') ? 'rgba(124,143,240,.18)' : g.includes('浏览器') ? 'rgba(251,191,36,.18)' : g.includes('模型') ? 'rgba(167,139,250,.18)' : g.includes('视频') ? 'rgba(45,212,191,.18)' : g.includes('编译')||g.includes('构建') ? 'rgba(251,113,133,.18)' : 'rgba(255,255,255,.1)';
+    const initialFg = (g) => g.includes('Agent') ? '#B9C7F7' : g.includes('浏览器') ? '#FBBF24' : g.includes('模型') ? '#C4B5FD' : g.includes('视频') ? '#5EEAD4' : g.includes('编译')||g.includes('构建') ? '#FDA4AF' : '#F2F4F8';
+    const processes = rawProcs.map(p => ({
+      name: p[0], group: p[1], initial: p[0][0].toUpperCase(),
+      iconBg: initialBg(p[1]), iconFg: initialFg(p[1]),
+      valText: sortKey === 'cpu' ? p[2] + '%' : (p[2] >= 1000 ? (p[2]/1000).toFixed(1) + 'GB' : p[2] + 'MB'),
+      valColor: sortKey === 'cpu' && p[2] >= 80 ? tone.main : 'rgba(242,244,248,.85)',
+      barPct: Math.round(p[2] / maxV * 100) + '%',
+      barColor: sortKey === 'cpu' ? colorOf(s.cpu.status) : colorOf(s.ram.status),
+    }));
+    const segOn = { flex:1, textAlign:'center', padding:'4px 12px', borderRadius:'6px', fontSize:'11px', fontWeight:600, cursor:'pointer', background:'rgba(255,255,255,.12)', color:'#F2F4F8' };
+    const segOff = { flex:1, textAlign:'center', padding:'4px 12px', borderRadius:'6px', fontSize:'11px', fontWeight:600, cursor:'pointer', color:'rgba(242,244,248,.5)' };
+
+    // ── bottleneck ──
+    const bt = TONE[s.bottleneck.tone];
+    const bottleneckCardStyle = {
+      marginTop:'16px', padding:'15px', borderRadius:'16px',
+      background: s.bottleneck.present ? `linear-gradient(160deg, ${bt.main}14, rgba(255,255,255,.03))` : 'rgba(52,211,153,.06)',
+      border: '1px solid ' + (s.bottleneck.present ? bt.main + '40' : 'rgba(52,211,153,.2)'),
+    };
+
+    // ── thermal strip ──
+    const th = s.thermal, thColor = colorOf(th.status);
+    const thermalStripStyle = {
+      marginTop:'12px', padding:'11px 14px', borderRadius:'12px', cursor:'pointer',
+      display:'flex', alignItems:'center', justifyContent:'space-between', gap:'10px',
+      background: th.status==='healthy' ? 'rgba(255,255,255,.03)' : `linear-gradient(90deg, ${thColor}18, rgba(255,255,255,.03))`,
+      border:'1px solid ' + (th.status==='healthy' ? 'rgba(255,255,255,.07)' : thColor + '40'),
+    };
+
+    // ── nav ──
+    const NAV = [['overview','概览','overview'],['details','详情','details'],['insights','洞察','insights'],['settings','设置','settings']];
+    const curRoot = this.state.view === 'upgrade' ? 'insights' : this.state.view;
+    const navItems = NAV.map(([v, label, icon]) => ({
+      label, onClick: () => this.setView(v),
+      color: curRoot === v ? '#F2F4F8' : 'rgba(242,244,248,.42)',
+      iconEl: e('span', { style: { color: curRoot === v ? tone.main : 'rgba(242,244,248,.42)' } }, ICONS[icon]()),
+    }));
+
+    // ── detail tabs ──
+    const DT = [['cpu','CPU'],['gpu','GPU'],['ram','内存'],['storage','存储'],['thermal','散热']];
+    const dtOn = { flex:1, textAlign:'center', padding:'7px 4px', borderRadius:'7px', fontSize:'11.5px', fontWeight:600, cursor:'pointer', background:'rgba(255,255,255,.12)', color:'#F2F4F8' };
+    const dtOff = { flex:1, textAlign:'center', padding:'7px 4px', borderRadius:'7px', fontSize:'11.5px', fontWeight:600, cursor:'pointer', color:'rgba(242,244,248,.5)' };
+    const detailTabs = DT.map(([k, label]) => ({ label, onClick: () => this.setState({ detailsTab: k }), style: this.state.detailsTab === k ? dtOn : dtOff }));
+
+    // ── detail body (built as element to keep the big switch out of template) ──
+    const mono = { fontFamily: "'Chivo Mono',monospace", fontVariantNumeric: 'tabular-nums' };
+    const sub = { fontSize: '11px', color: 'rgba(242,244,248,.55)' };
+    const cardBox = { padding: '15px', borderRadius: '14px', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.08)' };
+    const detailStat = (label, val, color) => e('div', { style: { display:'flex', justifyContent:'space-between', alignItems:'baseline', padding:'7px 0', borderTop:'1px solid rgba(255,255,255,.05)' } },
+      e('span', { style: sub }, label), e('span', { style: { ...mono, fontSize:'12.5px', fontWeight:600, color: color||'#F2F4F8' } }, val));
+    const explain = (txt) => e('p', { style: { margin:'10px 0 0', fontSize:'11.5px', lineHeight:1.5, color:'rgba(242,244,248,.6)' } }, txt);
+    const sectionTitle = (t) => e('div', { style:{ fontSize:'12.5px', fontWeight:600, marginBottom:'10px' } }, t);
+    const procList = (procs, sortIsCpu) => e('div', { style:{ display:'flex', flexDirection:'column', gap:'7px', marginTop:'4px' } },
+      procs.map((p,i) => e('div', { key:i, style:{ display:'flex', alignItems:'center', justifyContent:'space-between' } },
+        e('div', { style:{ display:'flex', alignItems:'center', gap:'8px' } },
+          e('span', { style:{ fontSize:'12px', fontWeight:600 } }, p[0]),
+          e('span', { style:{ fontSize:'9.5px', color:'rgba(242,244,248,.5)', background:'rgba(255,255,255,.06)', padding:'1px 6px', borderRadius:'6px' } }, p[1])),
+        e('span', { style:{ ...mono, fontSize:'11.5px', fontWeight:600 } }, sortIsCpu ? p[2]+'%' : (p[2]>=1000?(p[2]/1000).toFixed(1)+'GB':p[2]+'MB')))));
+
+    let detailBody;
+    const dt = this.state.detailsTab;
+    if (dt === 'cpu') {
+      const cc = colorOf(s.cpu.status);
+      detailBody = e('div', null,
+        e('div', { style:{ ...cardBox, display:'flex', alignItems:'center', gap:'16px' } },
+          e('div', { style:{ position:'relative', width:'92px', height:'92px', flex:'none', display:'flex', alignItems:'center', justifyContent:'center' } },
+            ring(92, 9, s.cpu.pct, cc, cc),
+            e('div', { style:{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' } },
+              e('span', { style:{ ...mono, fontSize:'22px', fontWeight:600 } }, s.cpu.pct + '%'),
+              e('span', { style:{ fontSize:'9px', color:'rgba(242,244,248,.5)' } }, '总负载'))),
+          e('div', { style:{ flex:1 } },
+            detailStat('User', s.cpu.user + '%'), detailStat('System', s.cpu.sys + '%'), detailStat('Idle', s.cpu.idle + '%', '#34D399'))),
+        e('div', { style:{ ...cardBox, marginTop:'12px' } }, sectionTitle('每核心负载 · P=性能核 E=能效核'), heatmap(s.cpu.cores),
+          explain(s.cpu.status === 'healthy' ? 'CPU 各核心负载均衡，没有持续打满的核心。' : '多个核心被持续打满，构建/测试任务正在抢占算力。')),
+        e('div', { style:{ ...cardBox, marginTop:'12px' } }, sectionTitle('近 10 分钟趋势'), areaChart(s.cpu.trend, cc)),
+        e('div', { style:{ ...cardBox, marginTop:'12px' } }, sectionTitle('CPU 占用进程'), procList(s.cpu.procs, true)));
+    } else if (dt === 'gpu') {
+      const cc = colorOf(s.gpu.status);
+      detailBody = s.gpu.available ? e('div', null,
+        e('div', { style:{ ...cardBox, display:'flex', alignItems:'center', gap:'16px' } },
+          e('div', { style:{ position:'relative', width:'92px', height:'92px', flex:'none', display:'flex', alignItems:'center', justifyContent:'center' } },
+            ring(92, 9, s.gpu.pct, cc, cc),
+            e('div', { style:{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' } },
+              e('span', { style:{ ...mono, fontSize:'22px', fontWeight:600 } }, s.gpu.pct + '%'),
+              e('span', { style:{ fontSize:'9px', color:'rgba(242,244,248,.5)' } }, '使用率'))),
+          e('div', { style:{ flex:1 } }, explain(s.gpu.status==='healthy'?'GPU 负载很低，图形与推理任务都很轻。':'GPU 被本地模型推理与视频导出占满，图形任务互相拖慢。'))),
+        e('div', { style:{ ...cardBox, marginTop:'12px' } }, sectionTitle('近 10 分钟趋势'), areaChart(s.gpu.trend, cc)),
+        e('div', { style:{ ...cardBox, marginTop:'12px' } }, sectionTitle('GPU 相关进程'), procList(s.gpu.procs, true))
+      ) : e('div', { style:{ ...cardBox, textAlign:'center' } },
+          e('div', { style:{ width:'44px', height:'44px', margin:'4px auto 12px', borderRadius:'12px', background:'rgba(255,255,255,.06)', display:'flex', alignItems:'center', justifyContent:'center', color:'rgba(242,244,248,.5)' } }, ICONS.gpu()),
+          e('div', { style:{ fontSize:'13px', fontWeight:600, marginBottom:'6px' } }, 'GPU 精准监控需要管理员授权'),
+          e('p', { style:{ margin:0, fontSize:'11.5px', lineHeight:1.55, color:'rgba(242,244,248,.6)' } }, 'macOS 的 GPU 使用率需要通过 privileged powermetrics sampler 获取。当前版本还没有安装授权 helper，因此不会显示伪造 GPU 数据。'));
+    } else if (dt === 'ram') {
+      const cc = colorOf(s.ram.status);
+      const pword = s.ram.pressure === 'normal' ? '正常' : s.ram.pressure === 'yellow' ? '偏高' : '严重';
+      const pPct = s.ram.pressure === 'normal' ? 28 : s.ram.pressure === 'yellow' ? 64 : 90;
+      const pressureBar = e('div', null,
+        e('div', { style:{ height:'12px', borderRadius:'99px', background:'linear-gradient(90deg,#34D399 0%,#FBBF24 55%,#F43F5E 100%)', position:'relative' } },
+          e('div', { style:{ position:'absolute', top:'-4px', left:`calc(${pPct}% - 3px)`, width:'6px', height:'20px', borderRadius:'4px', background:'#F2F4F8', boxShadow:'0 0 8px rgba(0,0,0,.5)' } })),
+        e('div', { style:{ display:'flex', justifyContent:'space-between', marginTop:'7px', fontSize:'10px', color:'rgba(242,244,248,.5)' } },
+          e('span', null, '正常'), e('span', null, '偏高'), e('span', null, '严重')));
+      detailBody = e('div', null,
+        e('div', { style:{ ...cardBox } },
+          e('div', { style:{ display:'flex', alignItems:'baseline', justifyContent:'space-between', marginBottom:'13px' } },
+            e('span', { style:{ fontSize:'12.5px', fontWeight:600 } }, '内存压力'),
+            e('span', { style:{ fontSize:'13px', fontWeight:700, color: cc } }, pword)),
+          pressureBar,
+          explain(s.ram.pressure === 'normal' ? '内存使用有效，绿色代表系统内存充足。' : '内存压力偏高，关注 swap 增长——它通常意味着 RAM 已不够当前任务。')),
+        e('div', { style:{ ...cardBox, marginTop:'12px' } }, sectionTitle('内存分项'),
+          detailStat('已用 / 物理', s.ram.used.toFixed(1) + ' / ' + s.ram.total + ' GB'),
+          detailStat('App 内存', s.ram.app + ' GB'),
+          detailStat('Wired', s.ram.wired + ' GB'),
+          detailStat('Compressed', s.ram.compressed + ' GB'),
+          detailStat('Cached Files', s.ram.cached + ' GB'),
+          detailStat('Swap Used', s.ram.swap + ' GB', s.ram.swap > 1 ? cc : '#34D399')),
+        s.ram.swap > 1 ? e('div', { style:{ marginTop:'12px', padding:'12px 14px', borderRadius:'12px', background:`${cc}14`, border:`1px solid ${cc}3a` } },
+          e('div', { style:{ fontSize:'11.5px', fontWeight:600, color: cc, marginBottom:'4px' } }, '⚠ Swap 正在快速增长'),
+          e('p', { style:{ margin:0, fontSize:'11px', lineHeight:1.5, color:'rgba(242,244,248,.7)' } }, '系统正在用硬盘模拟内存，这通常意味着 RAM 已经不够当前任务使用，可能导致卡顿。')) : null,
+        e('div', { style:{ ...cardBox, marginTop:'12px' } }, sectionTitle('占用内存最多的进程'), procList(s.ram.procs, false)));
+    } else if (dt === 'storage') {
+      const cc = colorOf(s.storage.status), pctUsed = s.storage.total > 0 ? Math.round(s.storage.used / s.storage.total * 100) : 0;
+      detailBody = e('div', null,
+        e('div', { style:{ ...cardBox, display:'flex', alignItems:'center', gap:'16px' } },
+          e('div', { style:{ position:'relative', width:'92px', height:'92px', flex:'none', display:'flex', alignItems:'center', justifyContent:'center' } },
+            ring(92, 9, pctUsed, cc, cc),
+            e('div', { style:{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' } },
+              e('span', { style:{ ...mono, fontSize:'20px', fontWeight:600 } }, s.storage.free + 'GB'),
+              e('span', { style:{ fontSize:'9px', color:'rgba(242,244,248,.5)' } }, '可用'))),
+          e('div', { style:{ flex:1 } },
+            detailStat('总容量', s.storage.total + ' GB'),
+            detailStat('已用', s.storage.used + ' GB'),
+            detailStat('重要可用', s.storage.important + ' GB'))),
+        e('div', { style:{ ...cardBox, marginTop:'12px' } }, sectionTitle('磁盘状态 · ' + s.storage.growth),
+          e('div', { style:{ display:'flex', flexDirection:'column', gap:'9px', marginTop:'4px' } },
+            s.storage.dirs.map((d,i) => e('div', { key:i, style:{ display:'flex', alignItems:'center', justifyContent:'space-between' } },
+              e('div', null, e('div', { style:{ fontSize:'12px', fontWeight:600 } }, d[0]), e('div', { style:{ fontSize:'10px', color:'rgba(242,244,248,.5)' } }, d[1])),
+              e('span', { style:{ ...mono, fontSize:'12px', fontWeight:600, color: cc } }, d[2]))))),
+        explain(s.storage.status==='healthy' ? '存储空间充足。若 RAM 不足触发 swap，低磁盘空间会进一步放大卡顿。' : '可用空间偏低。若同时出现 swap 增长，内部 SSD 空间会进一步影响体验。'));
+    } else { // thermal
+      const cc = colorOf(th.status);
+      const states = [['nominal','正常'],['fair','轻微'],['serious','偏高'],['critical','严重']];
+      const curIdx = states.findIndex(x => x[0] === th.state);
+      detailBody = e('div', null,
+        e('div', { style:{ ...cardBox } }, sectionTitle('当前热状态'),
+          e('div', { style:{ display:'flex', gap:'6px' } }, states.map((st,i) => e('div', { key:i, style:{
+            flex:1, textAlign:'center', padding:'9px 4px', borderRadius:'9px', fontSize:'11px', fontWeight:600,
+            background: i === curIdx ? cc : 'rgba(255,255,255,.05)', color: i === curIdx ? (i>=2?'#fff':'#0c1015') : 'rgba(242,244,248,.5)' } }, st[1]))),
+          explain(th.note)),
+        e('div', { style:{ ...cardBox, marginTop:'12px' } },
+          detailStat('持续高负载', th.sustained > 0 ? th.sustained + ' 分钟' : '无', th.sustained >= 10 ? cc : '#34D399'),
+          detailStat('电源', th.plugged === true ? '已接电' : th.plugged === false ? '使用电池' : '未知', th.plugged === true ? '#34D399' : th.plugged === false ? '#FBBF24' : 'rgba(242,244,248,.55)')),
+        th.status === 'critical' ? e('div', { style:{ marginTop:'12px', padding:'13px 14px', borderRadius:'12px', background:`${cc}16`, border:`1px solid ${cc}3a` } },
+          e('p', { style:{ margin:0, fontSize:'11.5px', lineHeight:1.55, color:'rgba(242,244,248,.78)' } }, '你的负载不是瞬时峰值，而是长时间持续高负载。无主动散热或轻薄设备可能不适合此类工作流。')) : null);
+    }
+
+    // ── insights widgets ──
+    const insDistroTotal = s.ins.distro.reduce((a, x) => a + x[1], 0);
+    const distroWidget = insDistroTotal > 0 ? e('div', null,
+      e('div', { style:{ display:'flex', height:'14px', borderRadius:'99px', overflow:'hidden', background:'rgba(255,255,255,.05)' } },
+        s.ins.distro.map((d,i) => e('div', { key:i, title:d[0], style:{ width:(d[1]/insDistroTotal*100)+'%', background:d[2] } }))),
+      e('div', { style:{ display:'flex', flexWrap:'wrap', gap:'10px 14px', marginTop:'12px' } },
+        s.ins.distro.map((d,i) => e('div', { key:i, style:{ display:'flex', alignItems:'center', gap:'6px' } },
+          e('span', { style:{ width:'8px', height:'8px', borderRadius:'2px', background:d[2] } }),
+          e('span', { style:{ fontSize:'11px', color:'rgba(242,244,248,.7)' } }, d[0]),
+          e('span', { style:{ ...mono, fontSize:'10.5px', color:'rgba(242,244,248,.45)' } }, d[1] + 'm'))))) :
+      e('div', { style:{ padding:'12px 0 2px', fontSize:'11.5px', color:'rgba(242,244,248,.55)' } }, '本次运行暂未检测到 CPU、GPU、内存、存储或散热瓶颈。');
+    const peakMax = Math.max(1, ...s.ins.peak);
+    const peakWidget = e('div', { style:{ display:'flex', alignItems:'flex-end', gap:'2px', height:'46px' } },
+      s.ins.peak.map((v,i) => e('div', { key:i, style:{ flex:1, height:(20 + v/peakMax*80)+'%', borderRadius:'3px',
+        background: v/peakMax > .85 ? tone.main : v/peakMax > .6 ? tone.main + 'aa' : 'rgba(255,255,255,.14)' } })));
+    const topApps = s.ins.topApps.map((a,i) => ({ rank: i+1, name: a[0], group: a[1], hrs: a[2] }));
+
+    // ── upgrade widgets ──
+    const up = s.up;
+    const axOn = (c) => ({ display:'flex', flexDirection:'column', gap:'2px', padding:'9px 14px', borderRadius:'12px', background:`${c}18`, border:`1px solid ${c}55`, color: c });
+    const axOff = { display:'flex', flexDirection:'column', gap:'2px', padding:'9px 14px', borderRadius:'12px', background:'rgba(255,255,255,.04)', border:'1px solid rgba(255,255,255,.08)', color:'rgba(242,244,248,.5)' };
+    const upAxes = up.axes.map(a => ({ label: a[0], tag: a[1], style: a[2] ? axOn(tone.main) : axOff }));
+    const upCompare = up.compare.map(r => ({ label: r[0], current: r[1], recommend: r[2], recColor: tone.main }));
+    const upActions = (up.actions || []).map((text, i) => ({ rank: i + 1, text }));
+    const upShoppingTips = (up.shoppingTips || []).map((tip) => ({ label: tip[0], value: tip[1] }));
+    const upgradeVerdictStyle = { padding:'16px', borderRadius:'16px', background:`linear-gradient(150deg, ${tone.main}1c, rgba(255,255,255,.03))`, border:`1px solid ${tone.main}44` };
+
+    // ── settings ──
+    const SR = ['1s','5s','30s'];
+    const sampleOptions = SR.map(r => ({ label: r==='5s'?'5s · 默认':r, onClick: () => this.setState({ sampleRate: r }),
+      style: this.state.sampleRate === r ? { flex:1, textAlign:'center', padding:'7px', borderRadius:'8px', fontSize:'11.5px', fontWeight:600, cursor:'pointer', background:'rgba(255,255,255,.12)', color:'#F2F4F8' } : { flex:1, textAlign:'center', padding:'7px', borderRadius:'8px', fontSize:'11.5px', fontWeight:600, cursor:'pointer', color:'rgba(242,244,248,.5)' } }));
+    const tg = this.state.toggles;
+    const mkTrack = (on) => ({ flex:'none', width:'40px', height:'23px', borderRadius:'99px', padding:'2px', display:'flex', transition:'background .15s', background: on ? 'linear-gradient(90deg,#5B8DEF,#8B5CF6)' : 'rgba(255,255,255,.14)', justifyContent: on ? 'flex-end' : 'flex-start', cursor:'pointer' });
+    const knob = { width:'19px', height:'19px', borderRadius:'99px', background:'#fff', boxShadow:'0 1px 3px rgba(0,0,0,.4)' };
+    const toggleDefs = [
+      ['launch','开机启动','登录时自动启动监控'],
+      ['grouping','进程场景分组','把进程归类到 Agent / 浏览器 / 本地模型等场景'],
+      ['network','联网硬件推荐','默认关闭。仅在你主动搜索硬件时联网'],
+    ];
+    const toggles = toggleDefs.map(([k,label,desc]) => ({ label, desc, onClick: () => this.setState({ toggles: { ...tg, [k]: !tg[k] } }), trackStyle: mkTrack(tg[k]), knobStyle: knob }));
+
+    // ── menu tray ──
+    const menuTrayIcons = e('span', { style:{ display:'flex', gap:'16px', color:'rgba(242,244,248,.6)' } }, ICONS.tray2(), ICONS.tray1());
+
+    return {
+      // routing
+      isOverview: this.state.view === 'overview', isDetails: this.state.view === 'details',
+      isInsights: this.state.view === 'insights', isUpgrade: this.state.view === 'upgrade', isSettings: this.state.view === 'settings',
+      navItems, sc: s,
+      // menubar
+      menuIcon: ICONS.chip(), menuTag: s.statusWord === '健康' ? 'OK' : s.key.toUpperCase(), menuTrayIcons, currentTime: this.formatMenuTime(),
+      heroColorMain: tone.main, glowColor: tone.main + '33',
+      // hero
+      heroRing: ring(132, 9, this.state.animScore, tone.from, tone.to), heroScore: this.state.animScore,
+      usageRing: ring(132, 9, usageScore, usageTone.from, usageTone.to), usageScore, usageColorMain: usageTone.main,
+      // cards
+      cards,
+      // thermal strip
+      thermalIcon: e('span', { style:{ color: thColor } }, ICONS.thermal()), thermalColor: thColor, thermalWord: th.word,
+      thermalStripStyle, thermalStripNote: th.stripNote, openThermal: () => this.openDetails('thermal'),
+      // processes
+      processes, setSortCpu: () => this.setState({ sort:'cpu' }), setSortMem: () => this.setState({ sort:'mem' }),
+      sortCpuStyle: sortKey==='cpu'?segOn:segOff, sortMemStyle: sortKey==='mem'?segOn:segOff,
+      // bottleneck
+      bottleneck: { ...s.bottleneck, color: bt.main }, bottleneckCardStyle,
+      bottleneckIcon: e('span', { style:{ color: bt.main } }, s.bottleneck.present ? ICONS.thermal() : ic(['M5 12l4 4 10-10'])),
+      evidenceOpen: this.state.evidenceOpen, toggleEvidence: () => this.setState({ evidenceOpen: !this.state.evidenceOpen }),
+      evidenceLabel: this.state.evidenceOpen ? '收起依据' : '查看依据（证据）', evidenceChevron: this.state.evidenceOpen ? '▲' : '▼',
+      recCheckBg: bt.main + '26', openUpgrade: () => this.setView('upgrade'),
+      // details
+      detailTabs, detailBody,
+      // insights
+      ins: { ...s.ins, topApps }, fitRing: ring(84, 8, s.ins.fitScore, TONE[s.ins.fitTone].from, TONE[s.ins.fitTone].to),
+      distroWidget, peakWidget,
+      // upgrade
+      up: { ...up, axes: upAxes, compare: upCompare, actions: upActions, shoppingTips: upShoppingTips },
+      upgradeVerdictStyle, backFromUpgrade: () => this.setView('insights'),
+      openUpgradeSearch: () => this.openUpgradeSearch(),
+      upgradeSearchLabel: this.state.upgradeSearchClicked ? '已打开搜索页面' : '打开搜索设备与价格',
+      // settings
+      sampleOptions, toggles, shieldIcon: e('span', { style:{ color:'#34D399' } }, ICONS.shield()),
+    };
+  }
+}
+</script>
+</body>
+</html>
