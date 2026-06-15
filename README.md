@@ -4,6 +4,28 @@ GPU Monitor 是一个本地优先的 macOS 菜单栏硬件监控工具，面向 
 
 当前版本是原型：它会安装一个 macOS 菜单栏 App，并在本机启动 localhost 后端和前端页面。默认不会上传指标、代码、提示词、语音、截图、网页内容或文件内容。
 
+## 最快开始
+
+Repo 入口：
+
+```text
+https://github.com/TROIZH/gpu-monitor
+```
+
+一行安装：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/TROIZH/gpu-monitor/main/install.sh | zsh
+```
+
+或者打开 Release 页面，下载最新版 `GPU-Monitor-v*.dmg`：
+
+```text
+https://github.com/TROIZH/gpu-monitor/releases/latest
+```
+
+安装完成后，macOS 顶部菜单栏会出现一个仪表盘图标。左键点击打开监控面板，右键点击可以打开 Dashboard、查看 GPU 授权说明、检查更新或退出。
+
 ## 首页两个仪表盘是什么意思
 
 首页左边是「健康值」，右边是「综合使用率」。
@@ -17,15 +39,21 @@ GPU Monitor 是一个本地优先的 macOS 菜单栏硬件监控工具，面向 
 
 ## 一键安装
 
-如果你是从 GitHub 下载源码或 clone 仓库，直接运行：
+普通用户不需要 clone 仓库，直接运行：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/TROIZH/gpu-monitor/main/install.sh | zsh
+```
+
+如果你已经下载源码或 clone 仓库，也可以运行：
 
 ```bash
 ./install.command
 ```
 
-这个脚本会构建 `GPU Monitor.app`，安装到 `~/Applications/GPU Monitor.app`，并自动打开。启动后，macOS 顶部菜单栏会出现一个仪表盘图标。左键点击打开监控下拉面板，右键点击可以打开 Dashboard、查看 GPU 授权说明、检查更新或退出。
+`install.sh` 会从 GitHub Release 下载最新安装包；`install.command` 会从源码构建 App。两种方式都会安装到 `~/Applications/GPU Monitor.app` 并自动打开。
 
-如果脚本提示缺少 Swift 编译器，先安装 Xcode Command Line Tools：
+只有从源码运行 `./install.command` 时才需要 Swift 编译器。如果脚本提示缺少 Swift，先安装 Xcode Command Line Tools：
 
 ```bash
 xcode-select --install
