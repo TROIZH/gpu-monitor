@@ -36,12 +36,9 @@ xcode-select --install
 从 Terminal 运行：
 
 ```bash
-cd "/Users/troy/Documents/New project" && \
-python3 -m venv local-resource-monitor-backend/.venv && \
-local-resource-monitor-backend/.venv/bin/python -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -e "local-resource-monitor-backend[psutil]" && \
-chmod +x macos-menu-bar/build-menu-app.command && \
-macos-menu-bar/build-menu-app.command && \
-open "$HOME/Applications/GPU Monitor.app"
+git clone https://github.com/TROIZH/gpu-monitor.git
+cd gpu-monitor
+./install.command
 ```
 
 ## 从 0 到 1 安装 SOP
@@ -49,7 +46,7 @@ open "$HOME/Applications/GPU Monitor.app"
 1. 下载或克隆仓库。
 
 ```bash
-git clone <repo-url> gpu-monitor
+git clone https://github.com/TROIZH/gpu-monitor.git
 cd gpu-monitor
 ```
 
