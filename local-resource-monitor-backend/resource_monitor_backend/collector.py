@@ -256,7 +256,9 @@ class ResourceCollector:
         compressor_pages = vm_stat.get("Pages occupied by compressor", 0)
         cached_pages = vm_stat.get("File-backed pages", 0)
 
-        available_bytes = free_pages * page_size
+        # File-backed pages are reclaimable cache on macOS. Counting only free pages
+        # makes memory look permanently full on unified-memory Macs.
+        available_bytes = (free_pages + cached_pages) * page_size
         used_bytes = max(0, total_bytes - available_bytes)
         used_percent = (used_bytes / total_bytes) * 100 if total_bytes else None
 
